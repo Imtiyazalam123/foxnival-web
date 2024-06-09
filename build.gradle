@@ -23,7 +23,7 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-gateway', version: '4.1.2'
-	testImplementation 'com.github.hyperskill:hs-test:master-SNAPSHOT'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
