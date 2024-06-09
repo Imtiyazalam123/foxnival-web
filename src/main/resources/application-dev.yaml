@@ -1,0 +1,7 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: foxnival-web
+  main:
+    web-application-type: reactive

@@ -1,0 +1,65 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.6'
+	id 'io.spring.dependency-management' version '1.1.5'
+	id "com.github.node-gradle.node" version "3.5.0"
+}
+
+group = 'com.foxnival'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2023.0.1")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-gateway', version: '4.1.2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+node {
+	download = true
+	version = '18.20.3'
+	npmVersion = '10.8.0'
+	nodeModulesDir = file("${project.projectDir}/src/main/webapp/foxnival-ui")
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task appNpmInstall(type: NpmTask){
+	description = " read package.json and install all jars for foxnival-ui"
+	workingDir = file("${project.projectDir}/src/main/webapp/foxnival-ui")
+	args =["install"]
+}
+task appNpmBuild(type: NpmTask){
+	description = "Builds application for foxnival-ui "
+	workingDir = file("${project.projectDir}/src/main/webapp/foxnival-ui")
+	args =["run", "build"]
+}
+
+task copyToFrontend(type: Copy){
+	from "$projectDir/src/main/webapp/foxnival-ui/build/"
+	into "$buildDir/resources/main/static"
+}
+
+appNpmBuild.dependsOn appNpmInstall
+copyToFrontend.dependsOn appNpmBuild
+compileJava.dependsOn copyToFrontend
