@@ -1,0 +1,42 @@
+.login_style {
+    width: 25%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -9em;
+    /*set to a negative number 1/2 of your height*/
+    margin-left: -12em;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    border-radius: 3%;
+    -moz-box-shadow: 0 0 5px #ccc;
+    -webkit-box-shadow: 0 0 5px #ccc;
+    box-shadow: 0 0 5px #ccc;
+}
+
+.form_pading,
+.btn-style {
+    padding: 12px;
+}
+body {
+    background-color: rgb(255, 226, 244);
+}
+
+.subcriber_style {
+    width: 35%;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    margin-top: -9em;
+    /*set to a negative number 1/2 of your height*/
+    margin-left: -12em;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    border-radius: 3%;
+    -moz-box-shadow: 0 0 5px #ccc;
+    -webkit-box-shadow: 0 0 5px #ccc;
+    box-shadow: 0 0 5px #ccc;
+}
+.subcriber_form_pading {
+    padding: 4px 30px
+}

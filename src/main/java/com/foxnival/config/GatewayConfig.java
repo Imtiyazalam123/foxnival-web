@@ -12,7 +12,7 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route(p -> p.path("/demo/**")
-                        .uri("http://localhost:8080"))
+                        .uri("https://foxnivalapidemo.azurewebsites.net"))
                 .build();
    }
 }
