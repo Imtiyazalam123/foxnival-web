@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import useRazorpay from 'react-razorpay';
 import { useLocation, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { OWNER } from '../../constant/Role.js'
 
 export default function Payment() {
     const { state } = useLocation();
@@ -12,7 +13,7 @@ export default function Payment() {
 
     const handlePayment = useCallback(() => {
         createOrder();
-    }, [Razorpay])
+    }, [])
 
     useEffect(() => {
         if (isLoaded) {
@@ -38,18 +39,29 @@ export default function Payment() {
                         // image: "https://example.com/your_logo",
                         order_id: data?.id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
                         handler: function (response) {
-                            Swal.fire({
-                                title: "Congratulation!",
-                                text: "You have succesfully subscribed, I will send login credential on your email, please check your email and login with that credential!",
-                                icon: "success"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    navigate("/login")
+                            if(state?.userInfo) {
+                                let data = {
+                                    name: state?.userInfo?.name,
+                                    role: OWNER,
+                                    username: state?.userInfo?.email,
+                                    password: state?.userInfo?.password,
+                                    organizationName: state?.userInfo?.organization,
+                                    planForYear: state?.userInfo?.planOption,
+                                    paymentStatus: 'success',
+                                    orderId: response.razorpay_order_id,
+                                    paymentId: response.razorpay_payment_id,
+                                    paymentSignature: response.razorpay_signature
                                 }
-                            });
+                                createSubscription(data)
+                            }
+                            console.log("Response", state?.userInfo);
+                            
                             // alert(response.razorpay_payment_id);
                             // alert(response.razorpay_order_id);
                             // alert(response.razorpay_signature);
+
+                            console.log("success ", response);
+                            
                         },
                         prefill: {
 
@@ -83,6 +95,7 @@ export default function Payment() {
                         // alert(response.error.reason);
                         // alert(response.error.metadata.order_id);
                         // alert(response.error.metadata.payment_id);
+                        console.log("error ", response);
                     });
                 }
             }).catch((err) => {
@@ -92,7 +105,28 @@ export default function Payment() {
             console.log("Error ", err);
         })
     }
-
+ const createSubscription = async(data) => {
+    await fetch('http://localhost:8080/subscribe/createSubscriberUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(response => response.json())
+    .then((res) => {
+        console.log("Subs res ", res);
+        Swal.fire({
+            title: "Congratulation!",
+            text: "You have succesfully subscribed, I will send login credential on your email, please check your email and login with that credential!",
+            icon: "success"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate("/login")
+            }
+        });
+    }).catch((err) => {
+        console.log("Subs Error ", err);
+        
+    });
+ }
     return (
         showLoader && <div class="text-center mt-5">
             <div className="spinner-border text-success loader_style" role="status">
