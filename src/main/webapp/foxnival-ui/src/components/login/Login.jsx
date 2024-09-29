@@ -20,7 +20,7 @@ export default function Login() {
                     <Link to="/" class="btn btn-danger">Back</Link>
                 </div>
                 <div className='btn-style mt-1 d-inline-block float-end'>
-                    <button type="submit" class="btn btn-success">Login</button>
+                    <Link to = "/dashboard" type="submit" class="btn btn-success">Login</Link>
                 </div>
             </form>
         </div>
