@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, CheckCircle, HelpCircle, Settings, MoreHorizontal, Edit, Trash } from 'lucide-react';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
   Box,
   TableContainer,
@@ -17,28 +19,27 @@ import {
   CardContent,
   Typography,
   Link,
-  Popover,
   Button,
   TextField,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 
-const StatsCard = ({ icon: Icon, title, value, background }) => (
+const StatsCard = ({ icon: Icon, title, value, color, bgColor }) => (
   <Card elevation={0} sx={{ height: '100%' }}>
     <CardContent>
       <Box display="flex" alignItems="flex-start" gap={2}>
         <Box
           sx={{
-            backgroundColor: background,
+            backgroundColor: bgColor,
             borderRadius: '50%',
             width: 40,
             height: 40,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
-          <Icon size={20} className="text-gray-600" />
+          <Icon sx={{ fontSize: 24, color }} />
         </Box>
         <Box>
           <Typography variant="h4" component="div" className="font-semibold">
@@ -53,75 +54,38 @@ const StatsCard = ({ icon: Icon, title, value, background }) => (
   </Card>
 );
 
-const StatusBadge = ({ status }) => {
-  const getStatusStyles = (status) => {
-    const styles = {
-      'In Progress': {
-        bgcolor: 'rgba(59, 130, 246, 0.1)',
-        color: 'rgb(29, 78, 216)',
-      },
-      'Completed': {
-        bgcolor: 'rgba(34, 197, 94, 0.1)',
-        color: 'rgb(21, 128, 61)',
-      },
-      'Pending': {
-        bgcolor: 'rgba(245, 158, 11, 0.1)',
-        color: 'rgb(180, 83, 9)',
-      }
-    };
-    return styles[status] || styles['Pending'];
-  };
-
-  return (
-    <Box
-      component="span"
-      sx={{
-        px: 2,
-        py: 1,
-        borderRadius: 1,
-        fontSize: '0.75rem',
-        fontWeight: 500,
-        display: 'inline-block',
-        ...getStatusStyles(status)
-      }}
-    >
-      {status}
-    </Box>
-  );
-};
-
 const RequestsDashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedItems, setSelectedItems] = useState({});
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const statsData = [
     {
-      title: "Completed",
+      title: 'Completed',
       value: 984,
-      icon: Calendar,
-      background: 'rgba(34, 197, 94, 0.1)'
+      icon: CheckCircleIcon,
+      color: 'rgb(21, 128, 61)',
+      bgColor: 'rgba(34, 197, 94, 0.1)',
     },
     {
-      title: "In Progress",
+      title: 'In Progress',
       value: 986,
-      icon: HelpCircle,
-      background: 'rgba(168, 85, 247, 0.1)'
+      icon: AccessTimeIcon,
+      color: 'rgb(29, 78, 216)',
+      bgColor: 'rgba(59, 130, 246, 0.1)',
     },
     {
-      title: "Pending",
+      title: 'Pending',
       value: 232,
-      icon: Settings,
-      background: 'rgba(249, 115, 22, 0.1)'
-    }
+      icon: WarningAmberIcon,
+      color: 'rgb(180, 83, 9)',
+      bgColor: 'rgba(245, 158, 11, 0.1)',
+    },
   ];
 
-  // Define the requests data within the component
   const requests = [
     { id: "req_66fe8b15i1j285o", taskName: "User Authentication Setup", status: "In Progress", assignedDate: "Apr 12, 2023", createdDate: "Mar 27, 2023" },
     { id: "req_66fe0hdsr2tshgn", taskName: "Database Optimization", status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 15, 2023" },
@@ -134,6 +98,44 @@ const RequestsDashboard = () => {
     { id: "req_66fet7xvv55ei1", taskName: "Payment Gateway Integration", status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 12, 2023" },
     { id: "req_66fe4lcd4v9o3q4", taskName: "SEO Optimization", status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 4, 2022" }
   ];
+
+  const StatusBadge = ({ status }) => {
+    const getStatusStyles = (status) => {
+      const styles = {
+        'In Progress': {
+          bgcolor: 'rgba(59, 130, 246, 0.1)',
+          color: 'rgb(29, 78, 216)',
+        },
+        'Completed': {
+          bgcolor: 'rgba(34, 197, 94, 0.1)',
+          color: 'rgb(21, 128, 61)',
+        },
+        'Pending': {
+          bgcolor: 'rgba(245, 158, 11, 0.1)',
+          color: 'rgb(180, 83, 9)',
+        }
+      };
+      return styles[status] || styles['Pending'];
+    };
+
+    return (
+      <Box
+        component="span"
+        sx={{
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          fontSize: '0.75rem',
+          fontWeight: 500,
+          display: 'inline-block',
+          ...getStatusStyles(status)
+        }}
+      >
+        {status}
+      </Box>
+    );
+  };
+
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -156,8 +158,8 @@ const RequestsDashboard = () => {
 
   const filteredRequests = requests.filter((request) => {
     return (
-      (filterStatus === "" || request.status === filterStatus) &&
-      (searchQuery === "" || request.taskName.toLowerCase().includes(searchQuery.toLowerCase()))
+      (filterStatus === '' || request.status === filterStatus) &&
+      (searchQuery === '' || request.taskName.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
 
@@ -166,41 +168,8 @@ const RequestsDashboard = () => {
     return filteredRequests.slice(startIndex, startIndex + rowsPerPage);
   };
 
-  const handleSelectAll = (event) => {
-    const isChecked = event.target.checked;
-    const newSelectedItems = {};
-    getCurrentPageData().forEach(request => {
-      newSelectedItems[request.id] = isChecked;
-    });
-    setSelectedItems(newSelectedItems);
-  };
-
-  const handleSelectItem = (id) => {
-    setSelectedItems(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
-
-  const isAllSelected = () => {
-    const currentPageData = getCurrentPageData();
-    return currentPageData.every(request => selectedItems[request.id]);
-  };
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-
   return (
     <Box sx={{ p: 4, bgcolor: 'grey.50' }}>
-
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {statsData.map((stat, index) => (
           <Grid item xs={12} sm={4} key={index}>
@@ -240,7 +209,6 @@ const RequestsDashboard = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><input type="checkbox" checked={isAllSelected()} onChange={handleSelectAll} /></TableCell>
                 <TableCell>Task Name</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Assigned Date</TableCell>
@@ -251,37 +219,27 @@ const RequestsDashboard = () => {
             <TableBody>
               {getCurrentPageData().map((request) => (
                 <TableRow key={request.id}>
-                  <TableCell><input type="checkbox" checked={selectedItems[request.id] || false} onChange={() => handleSelectItem(request.id)} /></TableCell>
-                  <TableCell>{request.taskName}</TableCell>
+                  <TableCell>
+                    <Link
+                      component="button"
+                      onClick={() => console.log(`Clicked task with ID: ${request.id}`)}
+                      sx={{ textAlign: 'left', width: '100%' }}
+                    >
+                      {request.taskName}
+                    </Link>
+                  </TableCell>
                   <TableCell><StatusBadge status={request.status} /></TableCell>
                   <TableCell>{request.assignedDate}</TableCell>
                   <TableCell>{request.createdDate}</TableCell>
                   <TableCell>
-                    <Button
-                      aria-describedby={id}
-                      onClick={handleMenuOpen}
-                      startIcon={<MoreHorizontal size={16} />}
-                      sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                    />
-                    <Popover
-                      id={id}
-                      open={open}
-                      anchorEl={anchorEl}
-                      onClose={handleMenuClose}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center'
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center'
-                      }}
-                    >
-                      <Box sx={{ p: 2 }}>
-                        <Button startIcon={<Edit size={16} />} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>Edit</Button>
-                        <Button startIcon={<Trash size={16} />} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>Delete</Button>
-                      </Box>
-                    </Popover>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button variant="outlined" size="small" >
+                        Edit
+                      </Button>
+                      <Button variant="outlined" color="error" size="small">
+                        Delete
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
