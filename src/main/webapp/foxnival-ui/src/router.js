@@ -86,10 +86,11 @@ import Payment from "./components/payment/Payment";
 import Dashboard from "./components/dashboard/Dashboard";
 import AssignedTask from "./components/dashboard/assignedtask";
 import ManageUser from "./components/dashboard/manageuser";
-import StartChat from "./components/dashboard/startchat";
 import RegisteredCustomer from "./components/dashboard/registeredcustomer";
 import Help from "./components/dashboard/help";
 import ManageToDoList from "./components/dashboard/managetodolist";
+import StartChat from "./components/start_chats/StartChat";
+
 
 export const router = createBrowserRouter([
     {
