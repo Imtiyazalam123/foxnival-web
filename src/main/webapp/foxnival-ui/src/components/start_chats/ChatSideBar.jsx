@@ -32,7 +32,7 @@ export default function ChatSideBar() {
 
       {value === 0 &&
 
-        <List sx={{p: 0, overflowY: "auto", flex: "1 0"}}>
+        <List sx={{p: 0, overflowY: "auto", flex: ""}}>
           <ListItem alignItems="flex-start">
             <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
