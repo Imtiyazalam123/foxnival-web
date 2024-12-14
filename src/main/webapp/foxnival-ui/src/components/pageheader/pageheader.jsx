@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 
-const PageHeader = ({ title, subheader, buttontext }) => {
+const PageHeader = ({ title, subheader, buttontext, onButtonClick }) => {
   return (
     <Box
       sx={{
@@ -19,7 +19,12 @@ const PageHeader = ({ title, subheader, buttontext }) => {
           {subheader}
         </Typography>
       </Box>
-      <Button variant="contained" color="primary" size='large'>
+      <Button 
+        variant="contained" 
+        color="primary" 
+        size='large'
+        onClick={onButtonClick}
+      >
         {buttontext}
       </Button>
     </Box>

@@ -209,11 +209,11 @@ const RequestsDashboard = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Task Name</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Assigned Date</TableCell>
-                <TableCell>Created Date</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Task Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Assigned Date</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Created Date</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
