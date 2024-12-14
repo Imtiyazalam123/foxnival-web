@@ -5,11 +5,11 @@ import ChatArea from './ChatArea'
 import ChatFooter from './ChatFooter'
 
 
-export default function ChatBox() {
+export default function ChatBox({selectedUser}) {
   return (
 
     <Box sx = {{width: "50vw", display: "flex", flexDirection: "column", height: "100%"}}>
-        <ChatBoxHeader/>
+        <ChatBoxHeader selectedUser = {selectedUser}/>
         <ChatArea/>
         <ChatFooter/>
     </Box>

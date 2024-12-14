@@ -4,7 +4,7 @@ import React from 'react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
 
-export default function ChatBoxHeader() {
+export default function ChatBoxHeader({selectedUser}) {
     return (
 
         <Card 
@@ -17,7 +17,7 @@ export default function ChatBoxHeader() {
                             <ArrowBackIcon />
                         </Button>
                         <Avatar >
-                            IA
+                            {selectedUser?.name?.split(' ').map(function(item){return item[0]}).join('')}
                         </Avatar>
                     </>
                 }
@@ -28,10 +28,10 @@ export default function ChatBoxHeader() {
                         </IconButton>
                     </>
                 }
-                title="Rohit Abcccc"
+                title={selectedUser?.name}
                 subheader={
                     <Typography variant='caption'>
-                        Frontend developer
+                        {selectedUser?.designation}
                     </Typography>
                 }
             />
