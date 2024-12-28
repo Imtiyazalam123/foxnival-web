@@ -3,7 +3,6 @@ import RegisteredCustomerTable from '../section/registeredcustomer/registeredcus
 import PageHeader from '../pageheader/pageheader';
 
 export default function RegisteredCustomer() {
-
     const [isRegisterCustomerDialogOpen, setIsRegisterCustomerDialogOpen] = useState(false);
 
     const handleRegisterCustomer = () => {
@@ -13,7 +12,6 @@ export default function RegisteredCustomer() {
     const handleCloseRegisterCustomerDialog = () => {
         setIsRegisterCustomerDialogOpen(false);
     };
-
 
     return (
         <div className="w-full">

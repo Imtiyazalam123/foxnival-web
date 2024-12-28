@@ -1,7 +1,37 @@
 import React, { useState, useMemo } from 'react';
-import { Box, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Paper, TablePagination, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputLabel, MenuItem, FormControl, Select, Divider } from '@mui/material';
+import PropTypes from 'prop-types';
+import {
+    Box,
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    Paper,
+    TablePagination,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    Divider
+} from '@mui/material';
 
-const RegisteredCustomerTable = () => {
+// Predefined designation options
+const designationOptions = [
+    'Manager',
+    'Sales Representative',
+    'Customer Support',
+    'Admin'
+];
+
+const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -10,13 +40,14 @@ const RegisteredCustomerTable = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
 
+    // Initial users state
     const [users, setUsers] = useState([
         {
             id: 1,
             name: 'Ram Sharma',
             phoneNo: '9898989898',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'ram@example.com'
         },
         {
@@ -24,7 +55,7 @@ const RegisteredCustomerTable = () => {
             name: 'Shyam Rajput',
             phoneNo: '8787878787',
             purpose: 'Enquiry',
-            status: 'online',
+            source: 'online',
             email: 'shyam@example.com'
         },
         {
@@ -32,7 +63,7 @@ const RegisteredCustomerTable = () => {
             name: 'Rohit',
             phoneNo: '5267825672',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'rohit@example.com'
         },
         {
@@ -40,7 +71,7 @@ const RegisteredCustomerTable = () => {
             name: 'Hema',
             phoneNo: '9256872357',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'hema@example.com'
         },
         {
@@ -48,7 +79,7 @@ const RegisteredCustomerTable = () => {
             name: 'Salim',
             phoneNo: '8562335548',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'salim@example.com'
         },
         {
@@ -56,7 +87,7 @@ const RegisteredCustomerTable = () => {
             name: 'Ramu',
             phoneNo: '8259613345',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'ramu@example.com'
         },
         {
@@ -64,7 +95,7 @@ const RegisteredCustomerTable = () => {
             name: 'Karan',
             phoneNo: '9334215796',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'karan@example.com'
         },
         {
@@ -72,7 +103,7 @@ const RegisteredCustomerTable = () => {
             name: 'Vivek',
             phoneNo: '9112387625',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'vivek@example.com'
         },
         {
@@ -80,11 +111,22 @@ const RegisteredCustomerTable = () => {
             name: 'Aarodhya',
             phoneNo: '9325675942',
             purpose: 'Enquiry',
-            status: 'offline',
+            source: 'offline',
             email: 'aarodhya@example.com'
         }
     ]);
 
+    // New user state
+    const [newUser, setNewUser] = useState({
+        name: '',
+        email: '',
+        designation: '',
+        mobileNo: '',
+        password: '',
+        confirmPassword: ''
+    });
+
+    // Page change handlers
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -94,6 +136,7 @@ const RegisteredCustomerTable = () => {
         setPage(0);
     };
 
+    // Search and filter handlers
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
         setPage(0);
@@ -104,28 +147,37 @@ const RegisteredCustomerTable = () => {
         setPage(0);
     };
 
+    // User management handlers
     const handleEditUser = (user) => {
         setSelectedUser(user);
         setOpenEditDialog(true);
     };
 
     const handleSaveEditedUser = () => {
-        const updatedUsers = users.map(user => user.id === selectedUser.id ? selectedUser : user);
-        setUsers(updatedUsers);
-        handleCloseEditDialog();
+        if (selectedUser) {
+            const updatedUsers = users.map(user =>
+                user.id === selectedUser.id ? selectedUser : user
+            );
+            setUsers(updatedUsers);
+            handleCloseEditDialog();
+        }
     };
 
     const handleDeleteUser = (userId) => {
-        setSelectedUser(users.find(user => user.id === userId));
+        const userToDelete = users.find(user => user.id === userId);
+        setSelectedUser(userToDelete || null);
         setOpenDeleteDialog(true);
     };
 
     const handleConfirmDeleteUser = () => {
-        const updatedUsers = users.filter(user => user.id !== selectedUser.id);
-        setUsers(updatedUsers);
-        handleCloseDeleteDialog();
+        if (selectedUser) {
+            const updatedUsers = users.filter(user => user.id !== selectedUser.id);
+            setUsers(updatedUsers);
+            handleCloseDeleteDialog();
+        }
     };
 
+    // Dialog close handlers
     const handleCloseEditDialog = () => {
         setOpenEditDialog(false);
         setSelectedUser(null);
@@ -136,20 +188,66 @@ const RegisteredCustomerTable = () => {
         setSelectedUser(null);
     };
 
-    const handleInputChange = (event) => {
-        setSelectedUser({
-            ...selectedUser,
-            [event.target.name]: event.target.value
+    const handleCloseCreateDialog = () => {
+        onCloseCreateDialog();
+        setNewUser({
+            name: '',
+            email: '',
+            designation: '',
+            mobileNo: '',
+            password: '',
+            confirmPassword: ''
         });
     };
 
+    // Input change handlers
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+
+        if (openEditDialog && selectedUser) {
+            setSelectedUser(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
+
+        if (isCreateDialogOpen) {
+            setNewUser(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
+    };
+
+    const handleSaveNewUser = () => {
+        // Validate new user input
+        if (newUser.password !== newUser.confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+
+        const newUserEntry = {
+            id: users.length + 1,
+            name: newUser.name,
+            phoneNo: newUser.mobileNo,
+            purpose: 'Enquiry', // Default purpose
+            source: 'offline',  // Default source
+            email: newUser.email
+        };
+
+        setUsers(prev => [...prev, newUserEntry]);
+        handleCloseCreateDialog();
+    };
+
+    // Filtering logic
     const filteredUsers = useMemo(() => {
         return users.filter(user =>
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            (filterStatus === '' || user.status === filterStatus)
+            (filterStatus === '' || user.source === filterStatus)
         );
     }, [users, searchQuery, filterStatus]);
 
+    // Pagination logic
     const getCurrentPageData = () => {
         const startIndex = page * rowsPerPage;
         return filteredUsers.slice(startIndex, startIndex + rowsPerPage);
@@ -157,6 +255,7 @@ const RegisteredCustomerTable = () => {
 
     return (
         <Box sx={{ p: 4, bgcolor: 'grey.50' }}>
+            {/* Search and Filter Section */}
             <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                 <TextField
                     variant="outlined"
@@ -167,10 +266,10 @@ const RegisteredCustomerTable = () => {
                     sx={{ minWidth: 200 }}
                 />
                 <FormControl variant="outlined" size="small" sx={{ minWidth: 150 }}>
-                    <InputLabel id="filter-status-label">Filter by Status</InputLabel>
+                    <InputLabel id="filter-source-label">Filter by source</InputLabel>
                     <Select
-                        labelId="filter-status-label"
-                        id="filter-status"
+                        labelId="filter-source-label"
+                        id="filter-source"
                         value={filterStatus}
                         onChange={handleFilterChange}
                     >
@@ -181,17 +280,18 @@ const RegisteredCustomerTable = () => {
                 </FormControl>
             </Box>
 
+            {/* User Table */}
             <Box sx={{ bgcolor: 'white', border: 1, borderColor: 'grey.200', borderRadius: 1 }}>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Phone Number</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Purpose</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                                {['Name', 'Phone Number', 'Purpose', 'Source', 'Email', 'Actions']
+                                    .map(header => (
+                                        <TableCell key={header} sx={{ fontWeight: 'bold' }}>
+                                            {header}
+                                        </TableCell>
+                                    ))}
                             </TableRow>
                         </TableHead>
 
@@ -201,17 +301,26 @@ const RegisteredCustomerTable = () => {
                                     <TableCell>{user.name}</TableCell>
                                     <TableCell>{user.phoneNo}</TableCell>
                                     <TableCell>{user.purpose}</TableCell>
-                                    <TableCell>{user.status}</TableCell>
+                                    <TableCell>{user.source}</TableCell>
                                     <TableCell>{user.email || 'N/A'}</TableCell>
                                     <TableCell>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <Button variant="outlined" size="small" onClick={() => handleEditUser(user)}>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => handleEditUser(user)}
+                                            >
                                                 Edit
                                             </Button>
-                                            <Button variant="outlined" color="error" size="small" onClick={() => handleDeleteUser(user.id)}>
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                size="small"
+                                                onClick={() => handleDeleteUser(user.id)}
+                                            >
                                                 Delete
                                             </Button>
-                                        </div>
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -229,8 +338,14 @@ const RegisteredCustomerTable = () => {
                 </TableContainer>
             </Box>
 
-            <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-                <DialogTitle sx={{ fontWeight: 'bold' }}>Edit User</DialogTitle>
+            {/* Edit User Dialog */}
+            <Dialog
+                open={openEditDialog}
+                onClose={handleCloseEditDialog}
+            >
+                <DialogTitle sx={{ fontWeight: 'bold' }}>
+                    Edit User
+                </DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -241,7 +356,7 @@ const RegisteredCustomerTable = () => {
                         fullWidth
                         variant="standard"
                         name="name"
-                        value={selectedUser?.name}
+                        value={selectedUser?.name || ''}
                         onChange={handleInputChange}
                     />
                     <TextField
@@ -252,7 +367,7 @@ const RegisteredCustomerTable = () => {
                         fullWidth
                         variant="standard"
                         name="phoneNo"
-                        value={selectedUser?.phoneNo}
+                        value={selectedUser?.phoneNo || ''}
                         onChange={handleInputChange}
                     />
                     <TextField
@@ -263,16 +378,16 @@ const RegisteredCustomerTable = () => {
                         fullWidth
                         variant="standard"
                         name="purpose"
-                        value={selectedUser?.purpose}
+                        value={selectedUser?.purpose || ''}
                         onChange={handleInputChange}
                     />
                     <FormControl variant="standard" fullWidth>
-                        <InputLabel id="status-label">Status</InputLabel>
+                        <InputLabel id="source-label">source</InputLabel>
                         <Select
-                            labelId="status-label"
-                            id="status"
-                            name="status"
-                            value={selectedUser?.status}
+                            labelId="source-label"
+                            id="source"
+                            name="source"
+                            value={selectedUser?.source || ''}
                             onChange={handleInputChange}
                         >
                             <MenuItem value="online">Online</MenuItem>
@@ -287,16 +402,21 @@ const RegisteredCustomerTable = () => {
                         fullWidth
                         variant="standard"
                         name="email"
-                        value={selectedUser?.email || 'N/A'}
+                        value={selectedUser?.email || ''}
                         onChange={handleInputChange}
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
-                    <Button variant='contained' onClick={handleSaveEditedUser}>Save</Button>
-                    <Button variant='outlined' onClick={handleCloseEditDialog}>Cancel</Button>
+                    <Button variant='contained' onClick={handleSaveEditedUser}>
+                        Save
+                    </Button>
+                    <Button variant='outlined' onClick={handleCloseEditDialog}>
+                        Cancel
+                    </Button>
                 </DialogActions>
             </Dialog>
 
+            {/* Delete User Dialog */}
             <Dialog
                 open={openDeleteDialog}
                 onClose={handleCloseDeleteDialog}
@@ -316,8 +436,101 @@ const RegisteredCustomerTable = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Register User Dialog */}
+            <Dialog
+                open={isCreateDialogOpen}
+                onClose={onCloseCreateDialog}
+            >
+                <DialogTitle sx={{ fontWeight: 'bold' }}>
+                    Register Customer
+                </DialogTitle>
+                <Divider sx={{ borderStyle: '1px', color: 'black' }} />
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Name"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        name="name"
+                    // value={newCustomer.name}
+                    // onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="phone"
+                        label="Phone Number"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        name="phone"
+                    // value={newCustomer.phone}
+                    // onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="purpose"
+                        label="Purpose"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        name="purpose"
+                    // value={newCustomer.purpose}
+                    // onChange={handleInputChange}
+                    />
+                    <FormControl variant="standard" fullWidth margin="dense">
+                        <InputLabel id="source-label">Source</InputLabel>
+                        <Select
+                            labelId="source-label"
+                            id="source"
+                            name="source"
+                        // value={newCustomer.source}
+                        // onChange={handleInputChange}
+                        >
+                            <MenuItem value="online">Online</MenuItem>
+                            <MenuItem value="offline">Offline</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        margin="dense"
+                        id="email"
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        variant="standard"
+                        name="email"
+                    // value={newCustomer.email}
+                    // onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="comments"
+                        label="Comments"
+                        type="text"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        variant="standard"
+                        name="comments"
+                    // value={newCustomer.comments}
+                    // onChange={handleInputChange}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
+                    <Button variant='contained' >
+                        Register
+                    </Button>
+                    <Button variant='outlined' onClick={onCloseCreateDialog}>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
+
 
 export default RegisteredCustomerTable;
