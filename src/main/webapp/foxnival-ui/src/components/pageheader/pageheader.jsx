@@ -8,7 +8,7 @@ const PageHeader = ({ title, subheader, buttontext, onButtonClick }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        mb: 4,
+        mb: 3,
       }}
     >
       <Box>

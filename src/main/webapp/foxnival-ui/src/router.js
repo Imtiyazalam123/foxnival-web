@@ -90,6 +90,7 @@ import RegisteredCustomer from "./components/dashboard/registeredcustomer";
 import Help from "./components/dashboard/help";
 import ManageToDoList from "./components/dashboard/managetodolist";
 import StartChat from "./components/start_chats/StartChat";
+import Subscribers from "./components/dashboard/subscribers";
 
 
 export const router = createBrowserRouter([
@@ -135,6 +136,10 @@ export const router = createBrowserRouter([
                     {
                         path: "/registeredcustomer",
                         element: <RegisteredCustomer/>
+                    },
+                    {
+                        path: "/subscribers",
+                        element: <Subscribers/>
                     },
                     {
                         path: "/help",

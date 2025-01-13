@@ -1,184 +1,271 @@
+// import React, { useState } from 'react';
+// import {
+//   Box,
+//   Drawer,
+//   IconButton,
+//   List,
+//   ListItem,
+//   ListItemIcon,
+//   ListItemText,
+//   useTheme,
+//   useMediaQuery
+// } from '@mui/material';
+// import MenuIcon from '@mui/icons-material/Menu';
+// import DashboardIcon from '@mui/icons-material/Dashboard';
+// import AssignmentIcon from '@mui/icons-material/Assignment';
+// import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+// import ChatIcon from '@mui/icons-material/Chat';
+// import PersonIcon from '@mui/icons-material/Person';
+// import ChecklistIcon from '@mui/icons-material/Checklist';
+// import PersonAddIcon from '@mui/icons-material/PersonAdd';
+// import HelpIcon from '@mui/icons-material/Help';
+// import { Link, useLocation } from 'react-router-dom';
+
+// const menuItems = [
+//   { text: 'Dashboard', icon: DashboardIcon, path: '/dashboard' },
+//   { text: 'Assigned Task', icon: AssignmentIcon, path: '/assigntask' },
+//   { text: 'Manage User', icon: ManageAccountsIcon, path: '/manageuser' },
+//   { text: 'Start Chat', icon: ChatIcon, path: '/startchat' },
+//   { text: 'Registered Customer', icon: PersonIcon, path: '/registeredcustomer' },
+//   { text: 'Manage To Do List', icon: ChecklistIcon, path: '/managetodolist' },
+//   { text: 'Subscribers', icon: PersonAddIcon, path: '/subscribers' },
+//   { text: 'Help', icon: HelpIcon, path: '/help' }
+// ];
+
+// const Sidebar = () => {
+//   const [mobileOpen, setMobileOpen] = useState(false);
+//   const theme = useTheme();
+//   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+//   const location = useLocation();
+//   const drawerWidth = 270;
+
+//   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+//   const SidebarContent = () => (
+//     <List>
+//       {menuItems.map(({ text, icon: Icon, path }) => {
+//         const isActive = location.pathname === path;
+//         return (
+//           <ListItem
+//             key={text}
+//             component={Link}
+//             to={path}
+//             onClick={() => isMobile && handleDrawerToggle()}
+//             sx={{
+//               py: 1.5,
+//               px: 3,
+//               bgcolor: isActive ? 'action.selected' : 'transparent',
+//               '&:hover': { bgcolor: 'action.hover' },
+//               borderLeft: isActive ? `4px solid ${theme.palette.primary.main}` : '4px solid transparent'
+//             }}
+//           >
+//             <ListItemIcon sx={{ color: isActive ? 'primary.main' : 'inherit', minWidth: 40 }}>
+//               <Icon />
+//             </ListItemIcon>
+//             <ListItemText
+//               primary={text}
+//               primaryTypographyProps={{
+//                 fontSize: '0.875rem',
+//                 fontWeight: isActive ? 600 : 500,
+//                 color: isActive ? 'primary.main' : 'inherit'
+//               }}
+//             />
+//           </ListItem>
+//         );
+//       })}
+//     </List>
+//   );
+
+//   return (
+//     <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+//       <IconButton
+//         onClick={handleDrawerToggle}
+//         sx={{
+//           position: 'fixed',
+//           left: 16,
+//           top: 8,
+//           zIndex: theme.zIndex.drawer + 2,
+//           display: { sm: 'none' }
+//         }}
+//       >
+//         <MenuIcon />
+//       </IconButton>
+
+//       <Drawer
+//         variant="temporary"
+//         open={mobileOpen}
+//         onClose={handleDrawerToggle}
+//         ModalProps={{ keepMounted: true }}
+//         sx={{
+//           display: { xs: 'block', sm: 'none' },
+//           '& .MuiDrawer-paper': {
+//             width: drawerWidth,
+//             bgcolor: 'background.paper',
+//             boxSizing: 'border-box'
+//           }
+//         }}
+//       >
+//         <SidebarContent />
+//       </Drawer>
+
+//       <Drawer
+//         variant="permanent"
+//         sx={{
+//           display: { xs: 'none', sm: 'block' },
+//           '& .MuiDrawer-paper': {
+//             width: drawerWidth,
+//             bgcolor: 'background.paper',
+//             borderRight: 1,
+//             borderColor: 'divider',
+//             boxSizing: 'border-box'
+//           }
+//         }}
+//         open
+//       >
+//         <SidebarContent />
+//       </Drawer>
+//     </Box>
+//   );
+// };
+
+// export default Sidebar;
+
+
 import React, { useState } from 'react';
 import {
+  Box,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Box,
-  IconButton,
-  Toolbar,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Toolbar
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Icon } from '@iconify/react';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ChatIcon from '@mui/icons-material/Chat';
+import PersonIcon from '@mui/icons-material/Person';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import HelpIcon from '@mui/icons-material/Help';
 import { Link, useLocation } from 'react-router-dom';
+
+const menuItems = [
+  { text: 'Dashboard', icon: DashboardIcon, path: '/dashboard' },
+  { text: 'Assigned Task', icon: AssignmentIcon, path: '/assigntask' },
+  { text: 'Manage User', icon: ManageAccountsIcon, path: '/manageuser' },
+  { text: 'Start Chat', icon: ChatIcon, path: '/startchat' },
+  { text: 'Registered Customer', icon: PersonIcon, path: '/registeredcustomer' },
+  { text: 'Manage To Do List', icon: ChecklistIcon, path: '/managetodolist' },
+  { text: 'Subscribers', icon: PersonAddIcon, path: '/subscribers' },
+  { text: 'Help', icon: HelpIcon, path: '/help' }
+];
 
 const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const drawerWidth = 270;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const location = useLocation();
+  const drawerWidth = 270;
 
-  const menuItems = [
-    { 
-      text: 'Dashboard', 
-      icon: 'material-symbols:dashboard',
-      path: '/dashboard' 
-    },
-    { 
-      text: 'Assigned Task', 
-      icon: 'material-symbols:assignment',
-      path: '/assigntask' 
-    },
-    { 
-      text: 'Manage User', 
-      icon: 'material-symbols:manage-accounts',
-      path: '/manageuser' 
-    },
-    { 
-      text: 'Start Chat', 
-      icon: 'material-symbols:chat',
-      path: '/startchat' 
-    },
-    { 
-      text: 'Registered Customer', 
-      icon: 'material-symbols:person',
-      path: '/registeredcustomer' 
-    },
-    { 
-      text: 'Manage To Do List', 
-      icon: 'material-symbols:checklist',
-      path: '/managetodolist' 
-    },
-    { 
-      text: 'Help', 
-      icon: 'material-symbols:help',
-      path: '/help' 
-    }
-  ];
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const drawer = (
+  const SidebarContent = () => (
     <>
       <Toolbar />
-      <Box sx={{ mt: 2 }}>
-        <List>
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            
-            return (
-              <ListItem 
-                key={item.text} 
-                component={Link} 
-                to={item.path}
-                onClick={() => isMobile && handleDrawerToggle()}
-                sx={{
-                  py: 1.5,
-                  px: 3,
-                  backgroundColor: isActive ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
-                  },
-                  position: 'relative',
-                  '&::before': isActive ? {
-                    content: '""',
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: '4px',
-                    backgroundColor: theme.palette.primary.main,
-                  } : {},
+      <List>
+        {menuItems.map(({ text, icon: Icon, path }) => {
+          const isActive = location.pathname === path;
+          return (
+            <ListItem
+              key={text}
+              component={Link}
+              to={path}
+              onClick={() => isMobile && setMobileOpen(false)}
+              sx={{
+                py: 2,
+                px: 2.5,
+                color: isActive ? '#1976d2' : '#fff',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                  '& .MuiListItemIcon-root': {
+                    color: '#1976d2'
+                  }
+                }
+              }}
+            >
+              <ListItemIcon sx={{ 
+                color: isActive ? '#1976d2' : '#fff',
+                minWidth: 40
+              }}>
+                <Icon />
+              </ListItemIcon>
+              <ListItemText 
+                primary={text}
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive ? 600 : 400
                 }}
-              >
-                <ListItemIcon 
-                  sx={{ 
-                    minWidth: 40,
-                    color: isActive ? theme.palette.primary.main : 'inherit'
-                  }}
-                >
-                  <Icon icon={item.icon} width="24" height="24" />
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontSize: '0.875rem',
-                    fontWeight: isActive ? 600 : 500,
-                    color: isActive ? theme.palette.primary.main : 'inherit'
-                  }}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
+              />
+            </ListItem>
+          );
+        })}
+      </List>
     </>
   );
 
   return (
-    <Box
-      component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-    >
-      {/* Mobile Hamburger Icon */}
+    <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
       <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        edge="start"
-        onClick={handleDrawerToggle}
-        sx={{ 
-          mr: 2, 
-          display: { sm: 'none' },
+        onClick={() => setMobileOpen(!mobileOpen)}
+        sx={{
           position: 'fixed',
           left: 16,
           top: 8,
-          zIndex: theme.zIndex.drawer + 2,
+          zIndex: theme.zIndex.drawer + 1,
+          display: { sm: 'none' },
+          color: '#fff'
         }}
       >
         <MenuIcon />
       </IconButton>
 
-      {/* Mobile Drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
             width: drawerWidth,
-            backgroundColor: 'background.paper',
-          },
+            bgcolor: '#1a1a1a',
+            color: '#fff',
+            boxSizing: 'border-box'
+          }
         }}
       >
-        {drawer}
+        <SidebarContent />
       </Drawer>
+
       <Drawer
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
           '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
             width: drawerWidth,
-            backgroundColor: 'background.paper',
-            borderRight: '1px solid rgba(0, 0, 0, 0.12)',
-            height: '100vh',
-          },
+            bgcolor: '#1a1a1a',
+            color: '#fff',
+            border: 'none',
+            boxSizing: 'border-box'
+          }
         }}
         open
       >
-        {drawer}
+        <SidebarContent />
       </Drawer>
     </Box>
   );
