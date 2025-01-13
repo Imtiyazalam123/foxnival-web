@@ -733,12 +733,16 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
                       '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
                       '& .MuiInput-underline:after': { borderBottom: 'none' },
                       '& .MuiInputBase-input': {
-                        fontWeight: 'bold',
-                        color: 'rgba(0, 0, 0, 0.87)',
-                        fontSize: '14px',
-                        fontFamily: 'inherit'
+                          fontWeight: 'bold',
+                          color: 'rgba(0, 0, 0, 0.87)',
+                          fontSize: '14px',
+                          fontFamily: 'inherit'
+                      },
+                      '& .MuiInputBase-input::placeholder': {
+                          color: 'rgba(0, 0, 0, 0.87)',
+                          opacity: 1
                       }
-                    }}
+                  }}
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Phone Number</TableCell>

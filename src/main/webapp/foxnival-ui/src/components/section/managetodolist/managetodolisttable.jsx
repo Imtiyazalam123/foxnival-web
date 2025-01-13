@@ -965,6 +965,10 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                                 color: 'rgba(0, 0, 0, 0.87)',
                                                 fontSize: '14px',
                                                 fontFamily: 'inherit'
+                                            },
+                                            '& .MuiInputBase-input::placeholder': {
+                                                color: 'rgba(0, 0, 0, 0.87)',
+                                                opacity: 1
                                             }
                                         }}
                                     />
