@@ -1,10 +1,27 @@
 import { Box, Button, TextField } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-export default function ChatFooter() {
+export default function ChatFooter({sendMessage, selectedUser}) {
+    const [input, setInput] = useState('');
+    const handleOnChange = (e) => {
+        setInput(e?.target?.value)
+        console.log(e?.target?.value);
+        
+    }
+    const handleClick = () => {
+        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedinUser'))
+        let msg = {
+            senderUsername: loggedinUser?.userName,
+            receiverUsername: selectedUser?.username,
+            content: input
+        }
+        console.log("send ", input);
+        sendMessage(msg)
+        setInput('');
+    }
     return (
         <Box sx={{ p: 1, display: 'flex' }}>
             <Box sx={{display: 'flex', alignItems:'center'}}>
@@ -24,8 +41,11 @@ export default function ChatFooter() {
                     }
                  }}
                  fullWidth
+                 value={input}
+                 onChange={handleOnChange}
                 />
                 <Button 
+                onClick={handleClick}
                 // variant='outlined'
                 // sx={{
                 //     borderRadius:0,

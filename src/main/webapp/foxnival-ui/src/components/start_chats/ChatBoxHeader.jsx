@@ -3,10 +3,12 @@ import { Avatar, Button, Card, CardHeader, IconButton, Typography } from '@mui/m
 import React from 'react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
+import ChatArea from './ChatArea'
 
-export default function ChatBoxHeader({selectedUser}) {
+export default function ChatBoxHeader({selectedUser, messages}) {
     return (
-
+     <>
+     
         <Card 
         elevation={0}
         sx={{ borderRadius: 0}}>
@@ -31,10 +33,13 @@ export default function ChatBoxHeader({selectedUser}) {
                 title={selectedUser?.name}
                 subheader={
                     <Typography variant='caption'>
-                        {selectedUser?.designation}
+                        {selectedUser?.username}
                     </Typography>
                 }
             />
         </Card>
+
+        <ChatArea  messages = {messages} />
+     </>
     )
 }

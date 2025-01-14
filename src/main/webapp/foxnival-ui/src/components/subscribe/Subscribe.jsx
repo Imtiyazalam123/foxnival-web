@@ -59,6 +59,8 @@ export default function Subscribe() {
         }),
         onSubmit: values => {
             if(payableAmount > 0) {
+                console.log("clicked....");
+                
                 navigate("/payment", {state: {amount: payableAmount, userInfo: values}})
             } else {
                 console.log("Values ", values);

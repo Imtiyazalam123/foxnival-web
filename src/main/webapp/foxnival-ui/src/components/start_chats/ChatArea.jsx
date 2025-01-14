@@ -1,9 +1,14 @@
 import { Avatar, Box, Chip, IconButton, List, ListItem, ListItemAvatar, ListItemText, Paper, Stack, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReplyIcon from '@mui/icons-material/Reply';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-export default function ChatArea() {
+export default function ChatArea({ messages }) {
+
+  let loggedinUser = JSON.parse(sessionStorage.getItem('loggedinUser'))
+  console.log(loggedinUser);
+  
+
   return (
     <Box sx={{ overflowY: 'auto', flex: '1 0 0', background: '#f5f5f0' }}>
 
@@ -19,12 +24,14 @@ export default function ChatArea() {
         <Chip label="Today" />
       </Stack>
       <List sx={{ p: 0, overflowY: "auto", flex: "" }}>
-        <ListItem sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', width: '80%' }}>
-            <ListItemAvatar>
+        { messages?.map((msg, index) => (
+          
+          <ListItem key = {index} sx={loggedinUser?.id === msg?.sender?.id ? { display: 'flex', flexDirection: 'row-reverse', mb: 2 } : { mb: 2 }}>
+          <Box sx={loggedinUser?.id === msg?.sender?.id ? { display: 'flex', width: '80%', flexDirection: 'row-reverse' } : { display: 'flex', width: '80%' }}>
+            <ListItemAvatar sx = {loggedinUser?.id === msg?.sender?.id ? {display: 'flex', flexDirection: 'row-reverse'} : {}}>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg"> RA</Avatar>
             </ListItemAvatar>
-            <Paper sx={{ width: '100%', p: 1.5 }}>
+            <Paper sx={ loggedinUser?.id === msg?.sender?.id ? { width: '100%', p: 1.5, bgcolor: 'primary.light', color: 'primary.contrastText' } : { width: '100%', p: 1.5 }}>
               <ListItemText
                 sx={
                   {
@@ -36,14 +43,13 @@ export default function ChatArea() {
 
                   <Typography
                     variant="caption"
-                    sx={{ color: 'text.primary' }}
+                    sx={loggedinUser?.id === msg?.sender?.id ? {} : { color: 'text.primary' }}
                   >
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Atque, ratione. Quo,
-                    voluptates rem itaque, molestias sit minima facilis aliquid commodi fuga dolor dolorem incidunt nihil consectetur aliquam deserunt. Alias, qui!
+                    {msg?.content}
                   </Typography>
                 }
               />
-              <Box sx={{ mt: 1, alignItems: 'center', display: 'flex', justifyContent: 'space-between'}}>
+              <Box sx={{ mt: 1, alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant='body2'>
                   12:20 PM
                 </Typography>
@@ -55,7 +61,7 @@ export default function ChatArea() {
               </Box>
             </Paper>
           </Box>
-        </ListItem>
+        </ListItem> )) }
 
         <ListItem sx={{ display: 'flex', flexDirection: 'row-reverse', mb: 2 }}>
           <Box sx={{ display: 'flex', width: '80%', flexDirection: 'row-reverse' }}>
@@ -83,10 +89,10 @@ export default function ChatArea() {
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Atque, ratione. Quo,
                     voluptates rem itaque, molestias sit minima facilis aliquid commodi fuga dolor dolorem incidunt nihil consectetur aliquam deserunt. Alias, qui!
                   </Typography>
-                  
+
                 }
               />
-              <Box sx={{ mt: 1, alignItems: 'center', display: 'flex', justifyContent: 'space-between'}}>
+              <Box sx={{ mt: 1, alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant='body2'>
                   12:21 PM
                 </Typography>

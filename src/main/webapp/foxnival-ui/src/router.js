@@ -77,8 +77,6 @@
 // ]);
 
 import { createBrowserRouter } from "react-router-dom";
-import RootLayout from "./components/layout/rootLayout";
-import Layout from "./components/layout/layout";
 import Login from "./components/login/Login";
 import Home from "./components/Home";
 import Subscribe from "./components/subscribe/Subscribe";
@@ -90,68 +88,73 @@ import RegisteredCustomer from "./components/dashboard/registeredcustomer";
 import Help from "./components/dashboard/help";
 import ManageToDoList from "./components/dashboard/managetodolist";
 import StartChat from "./components/start_chats/StartChat";
+import ProtectedSidebar from "./components/layout/ProtectedSidebar";
+import ProtectedNavbar from "./components/layout/ProtectedNavbar";
 import Subscribers from "./components/dashboard/subscribers";
 
 
 export const router = createBrowserRouter([
     {
-        element: <RootLayout />,
+        path: "/",
+        element: <Home />
+    },
+    {
+        path: "/login",
+        element: <Login />
+    },
+    {
+        path: "/subscribe",
+        element: <Subscribe />
+    },
+    {
+        path: "/payment",
+        element: <Payment />
+    },
+    // Dashboard section with its own layout
+    {
+        element: <ProtectedNavbar />,
         children: [
             {
-                path: "/",
-                element: <Home/>
-            },
-            {
-                path: "/login",
-                element: <Login/>
-            },
-            {
-                path: "/subscribe",
-                element: <Subscribe/>
-            },
-            {
-                path: "/payment",
-                element: <Payment/>
-            },
-            // Dashboard section with its own layout
-            {
-                element: <Layout />,
+                element: <ProtectedSidebar />,
                 children: [
                     {
                         path: "/dashboard",
-                        element: <Dashboard/>
+                        element: <Dashboard />
                     },
                     {
                         path: "/assigntask",
-                        element: <AssignedTask/>
+                        element: <AssignedTask />
                     },
                     {
                         path: "/manageuser",
-                        element: <ManageUser/>
+                        element: <ManageUser />
                     },
                     {
                         path: "/startchat",
-                        element: <StartChat/>
+                        element: <StartChat />
                     },
                     {
                         path: "/registeredcustomer",
-                        element: <RegisteredCustomer/>
-                    },
-                    {
-                        path: "/subscribers",
-                        element: <Subscribers/>
+                        element: <RegisteredCustomer />
                     },
                     {
                         path: "/help",
-                        element: <Help/>
+                        element: <Help />
                     },
                     {
                         path: "/managetodolist",
-                        element: <ManageToDoList/>
-                    }
-                    
+                        element: <ManageToDoList />
+                    },
+                    {
+                        path: "/subscribers",
+                        element: <Subscribers />
+                    },
+                    // add layout/sidebar route logic here.
+
                 ]
-            }
+            },
+            //add root layout/navbar route logic here .
         ]
     }
+
 ]);
