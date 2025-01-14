@@ -771,7 +771,6 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -807,9 +806,10 @@ const StatsCard = ({ icon: Icon, title, value, color, bgColor }) => (
   </Card>
 );
 
-const RequestsDashboard = () => {
+const RequestsDashboard = ({userHasHigherRole}) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchQueryByUser, setSearchQueryByUser] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
@@ -841,16 +841,16 @@ const RequestsDashboard = () => {
   ];
 
   const requests = [
-    { id: "req_66fe8b15i1j285o", taskName: "User Authentication Setup", status: "In Progress", assignedDate: "Apr 12, 2023", createdDate: "Mar 27, 2023" },
-    { id: "req_66fe0hdsr2tshgn", taskName: "Database Optimization", status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 15, 2023" },
-    { id: "req_66fet7xvv55ei9", taskName: "API Integration", status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 10, 2023" },
-    { id: "req_66fe4lcd4v9o3q2", taskName: "Frontend Development", status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 2, 2022" },
-    { id: "req_66fe8b15i1j285p", taskName: "Testing & QA", status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 14, 2023" },
-    { id: "req_66fet7xvv55ei0", taskName: "UI Design Update", status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 11, 2023" },
-    { id: "req_66fe4lcd4v9o3q3", taskName: "Backend API Setup", status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 3, 2022" },
-    { id: "req_66fe8b15i1j285q", taskName: "User Analytics", status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 16, 2023" },
-    { id: "req_66fet7xvv55ei1", taskName: "Payment Gateway Integration", status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 12, 2023" },
-    { id: "req_66fe4lcd4v9o3q4", taskName: "SEO Optimization", status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 4, 2022" }
+    { id: "req_66fe8b15i1j285o", taskName: "User Authentication Setup", user: {id: 1, name: "Imtiyaj Anasari"}, status: "In Progress", assignedDate: "Apr 12, 2023", createdDate: "Mar 27, 2023" },
+    { id: "req_66fe0hdsr2tshgn", taskName: "Database Optimization", user: {id: 1, name: "Imtiyaj Anasari"}, status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 15, 2023" },
+    { id: "req_66fet7xvv55ei9", taskName: "API Integration", user: {id: 1, name: "Imtiyaj Anasari"}, status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 10, 2023" },
+    { id: "req_66fe4lcd4v9o3q2", taskName: "Frontend Development", user: {id: 1, name: "Imtiyaj Anasari"}, status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 2, 2022" },
+    { id: "req_66fe8b15i1j285p", taskName: "Testing & QA", user: {id: 1, name: "Imtiyaj Anasari"}, status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 14, 2023" },
+    { id: "req_66fet7xvv55ei0", taskName: "UI Design Update", user: {id: 1, name: "Imtiyaj Anasari"}, status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 11, 2023" },
+    { id: "req_66fe4lcd4v9o3q3", taskName: "Backend API Setup", user: {id: 1, name: "Imtiyaj Anasari"}, status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 3, 2022" },
+    { id: "req_66fe8b15i1j285q", taskName: "User Analytics", user: {id: 1, name: "Imtiyaj Anasari"}, status: "Completed", assignedDate: "Apr 22, 2023", createdDate: "Feb 16, 2023" },
+    { id: "req_66fet7xvv55ei1", taskName: "Payment Gateway Integration", user: {id: 1, name: "Imtiyaj A"}, status: "Pending", assignedDate: "Apr 18, 2023", createdDate: "Jan 12, 2023" },
+    { id: "req_66fe4lcd4v9o3q4", taskName: "SEO Optimization", user: {id: 1, name: "Rohit A"}, status: "In Progress", assignedDate: "Apr 20, 2023", createdDate: "Dec 4, 2022" }
   ];
 
   const StatusBadge = ({ status }) => {
@@ -862,7 +862,7 @@ const RequestsDashboard = () => {
         },
         'Completed': {
           bgcolor: 'rgba(34, 197, 94, 0.1)',
-          color: 'rgb(21, 128, 61)',
+          color: 'rgb(26, 54, 37)',
         },
         'Pending': {
           bgcolor: 'rgba(245, 158, 11, 0.1)',
@@ -910,7 +910,8 @@ const RequestsDashboard = () => {
   const filteredRequests = requests.filter((request) => {
     return (
       (filterStatus === '' || request.status === filterStatus) &&
-      (searchQuery === '' || request.taskName.toLowerCase().includes(searchQuery.toLowerCase()))
+      (searchQuery === '' || request.taskName.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (searchQueryByUser === '' || request?.user?.name.toLowerCase().includes(searchQueryByUser.toLowerCase()))
     );
   });
 
@@ -958,6 +959,30 @@ const RequestsDashboard = () => {
                     }}
                   />
                 </TableCell>
+                { userHasHigherRole && <TableCell>
+                  <TextField
+                    size="small"
+                    variant="standard"
+                    placeholder="Assigned user"
+                    value={searchQueryByUser}
+                    onChange={(e) => setSearchQueryByUser(e.target.value)}
+                    sx={{
+                      '& .MuiInput-underline:before': { borderBottom: 'none' },
+                      '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
+                      '& .MuiInput-underline:after': { borderBottom: 'none' },
+                      '& .MuiInputBase-input': {
+                        fontWeight: 'bold',
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit'
+                      },
+                      '& .MuiInputBase-input::placeholder': {
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        opacity: 1
+                      }
+                    }}
+                  />
+                </TableCell> }
                 <TableCell sx={{ fontWeight: 'bold' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={handleOpenFilter}>
                     Status
@@ -997,6 +1022,15 @@ const RequestsDashboard = () => {
                       {request.taskName}
                     </Link>
                   </TableCell>
+                 { userHasHigherRole  && <TableCell>
+                    <Link
+                      component="button"
+                      onClick={() => console.log(`Clicked user with ID: ${request?.user?.id}`)}
+                      sx={{ textAlign: 'left', width: '100%' }}
+                    >
+                      {request?.user?.name}
+                    </Link>
+                  </TableCell> }
                   <TableCell><StatusBadge status={request.status} /></TableCell>
                   <TableCell>{request.assignedDate}</TableCell>
                   <TableCell>{request.createdDate}</TableCell>

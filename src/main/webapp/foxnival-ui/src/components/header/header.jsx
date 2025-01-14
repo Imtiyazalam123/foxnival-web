@@ -70,8 +70,9 @@
 
 
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Badge, Box, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Badge, Box, Avatar, Button } from '@mui/material';
 import { Notifications, Settings, ExitToApp } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -82,12 +83,20 @@ const Header = () => {
     { id: 3, text: 'Project update', time: '1h ago' }
   ]);
 
+  const navigate = useNavigate();
+
   const handleProfileMenu = (event) => setAnchorEl(event.currentTarget);
   const handleNotificationMenu = (event) => setNotificationAnchor(event.currentTarget);
   const handleClose = () => {
     setAnchorEl(null);
     setNotificationAnchor(null);
   };
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate("/login")
+  }
 
   return (
     <AppBar 
@@ -179,7 +188,7 @@ const Header = () => {
           </MenuItem>
           <MenuItem onClick={handleClose}>
             <ExitToApp sx={{ mr: 1, fontSize: 20 }} />
-            Logout
+            <Button onClick={handleLogout}>Logout</Button>
           </MenuItem>
         </Menu>
       </Toolbar>
