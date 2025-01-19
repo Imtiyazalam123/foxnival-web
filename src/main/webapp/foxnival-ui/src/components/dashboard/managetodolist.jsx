@@ -1,30 +1,39 @@
-import React, { useState } from 'react';
+// ManageToDoList.js
+import React, { useState, useEffect } from 'react';
 import PageHeader from '../pageheader/pageheader';
 import ManageToDoListTable from '../section/managetodolist/managetodolisttable';
+import { MANAGER, OWNER } from '../../constant/Role'; // Make sure path is correct
 
 export default function ManageToDoList() {
-   const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
+    const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
+    const [userHasHigherRole, setUserHasHigherRole] = useState(false);
 
-   const handleCreateTask = () => {
-       setIsCreateTaskDialogOpen(true);
-   };
+    useEffect(() => {
+        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        setUserHasHigherRole((loggedinUser?.role === OWNER || loggedinUser?.role === MANAGER));
+    }, []);
 
-   const handleCloseCreateTaskDialog = () => {
-       setIsCreateTaskDialogOpen(false);
-   };
+    const handleCreateTask = () => {
+        setIsCreateTaskDialogOpen(true);
+    };
 
-   return (
-       <div className="w-full">
-           <PageHeader
-               title='Manage To Do List'
-               subheader='Create and manage tasks.'
-               buttontext='Create Task'
-               onButtonClick={handleCreateTask}
-           />
-           <ManageToDoListTable
-               isCreateDialogOpen={isCreateTaskDialogOpen}
-               onCloseCreateDialog={handleCloseCreateTaskDialog}
-           />
-       </div>
-   );
+    const handleCloseCreateTaskDialog = () => {
+        setIsCreateTaskDialogOpen(false);
+    };
+
+    return (
+        <div className="w-full">
+            <PageHeader
+                title='Manage To Do List'
+                subheader='Create and manage tasks.'
+                buttontext='Create Task'
+                userHasHigherRole={userHasHigherRole} // Added this prop
+                onButtonClick={handleCreateTask}
+            />
+            <ManageToDoListTable
+                isCreateDialogOpen={isCreateTaskDialogOpen}
+                onCloseCreateDialog={handleCloseCreateTaskDialog}
+            />
+        </div>
+    );
 }

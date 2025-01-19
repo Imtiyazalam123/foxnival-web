@@ -1,7 +1,16 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 
-const PageHeader = ({ title, subheader, userHasHigherRole, onButtonClick }) => {
+const PageHeader = ({
+  title,
+  subheader,
+  buttontext,
+  userHasHigherRole = false,
+  onButtonClick,
+  showButton = true
+}) => {
+  const shouldShowButton = showButton && userHasHigherRole && buttontext && onButtonClick;
+
   return (
     <Box
       sx={{
@@ -15,18 +24,22 @@ const PageHeader = ({ title, subheader, userHasHigherRole, onButtonClick }) => {
         <Typography fontSize="24px" fontWeight='600' color='textprimary'>
           {title}
         </Typography>
-        <Typography fontSize="18px"  color="textSecondary">
-          {subheader}
-        </Typography>
+        {subheader && (
+          <Typography fontSize="18px" color="textSecondary">
+            {subheader}
+          </Typography>
+        )}
       </Box>
-      { userHasHigherRole && <Button 
-        variant="contained" 
-        color="primary" 
-        size='large'
-        onClick={onButtonClick}
-      >
-        Create Task
-      </Button> }
+      {shouldShowButton && (
+        <Button
+          variant="contained"
+          color="primary"
+          size='large'
+          onClick={onButtonClick}
+        >
+          {buttontext}
+        </Button>
+      )}
     </Box>
   );
 };
