@@ -620,6 +620,8 @@
 import 'simplebar-react/dist/simplebar.min.css';
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import {
     Box,
     TableContainer,
@@ -642,26 +644,88 @@ import {
     IconButton,
     Tooltip,
     Button,
-    Popover
+    Popover,
+    FormHelperText,
+    Grid,
+    Card,
+    CardContent,
+    Typography
 } from '@mui/material';
 import SimpleBar from 'simplebar-react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 // Predefined options
 const severityOptions = ['Low', 'Medium', 'High', 'Critical'];
 const statusOptions = ['Open', 'In Progress', 'Under Review', 'Completed'];
 
+const StatsCard = ({ icon: Icon, title, value, color, bgColor }) => (
+    <Card elevation={0} sx={{ height: '90%', boxShadow: 3 }}>
+        <CardContent sx={{ p: 1 }}>
+            <Box display="flex" alignItems="flex-start" gap={2}>
+                <Box
+                    sx={{
+                        backgroundColor: bgColor,
+                        borderRadius: '50%',
+                        width: 40,
+                        height: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Icon sx={{ fontSize: 24, color }} />
+                </Box>
+                <Box>
+                    <Typography variant="h5" component="div" className="font-semibold">
+                        {value.toLocaleString()}
+                    </Typography>
+                    <Typography color="textSecondary" variant="body2">
+                        {title}
+                    </Typography>
+                </Box>
+            </Box>
+        </CardContent>
+    </Card>
+);
+
 const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
     const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+
+    const statsData = [
+        {
+            title: 'Completed',
+            value: 984,
+            icon: CheckCircleIcon,
+            color: 'rgb(21, 128, 61)',
+            bgColor: 'rgba(34, 197, 94, 0.1)',
+        },
+        {
+            title: 'In Progress',
+            value: 986,
+            icon: AccessTimeIcon,
+            color: 'rgb(29, 78, 216)',
+            bgColor: 'rgba(59, 130, 246, 0.1)',
+        },
+        {
+            title: 'Pending',
+            value: 232,
+            icon: WarningAmberIcon,
+            color: 'rgb(180, 83, 9)',
+            bgColor: 'rgba(245, 158, 11, 0.1)',
+        },
+    ];
 
     // Existing tasks state
     const [tasks, setTasks] = useState([
@@ -806,18 +870,60 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
     const [newTask, setNewTask] = useState({
         taskName: '',
         severity: '',
-        assignedTo: '',
+        assignedTo: 'unassigned',
         status: '',
         assignedTime: '',
         attachment: null,
         comments: ''
     });
 
+    const resetNewTask = () => {
+        setNewTask({
+            taskName: '',
+            severity: '',
+            assignedTo: 'unassigned',
+            status: '',
+            assignedTime: '',
+            attachment: null,
+            comments: ''
+        });
+    };
+
+
     const handleFileChange = (event) => {
         setNewTask(prev => ({
             ...prev,
             attachment: event.target.files[0]
         }));
+    };
+
+    const [errors, setErrors] = useState({
+        taskName: '',
+        severity: '',
+        assignedTo: '',
+        status: '',
+        assignedTime: ''
+    });
+
+    // Validation rules
+    const validateField = (name, value) => {
+        switch (name) {
+            case 'taskName':
+                return !value.trim() ? 'Task name is required' :
+                    value.length < 3 ? 'Task name must be at least 3 characters' :
+                        value.length > 50 ? 'Task name must be less than 50 characters' : '';
+            case 'severity':
+                return !value ? 'Severity is required' : '';
+            case 'assignedTo':
+                return !value ? 'Assignment is required' : '';
+            case 'status':
+                return !value ? 'Status is required' : '';
+            case 'assignedTime':
+                return !value ? 'Assigned time is required' :
+                    new Date(value) < new Date() ? 'Assigned time cannot be in the past' : '';
+            default:
+                return '';
+        }
     };
 
     // Status filter handlers
@@ -888,28 +994,40 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
 
     const handleCloseCreateDialog = () => {
         onCloseCreateDialog();
-        setNewTask({
+        resetNewTask();
+        setErrors({
             taskName: '',
             severity: '',
             assignedTo: '',
             status: '',
-            attachment: '',
             assignedTime: ''
         });
     };
 
-    // Input change handlers
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
 
+        // Handle edit dialog
         if (openEditDialog && selectedTask) {
+            const error = validateField(name, value);
+            setErrors(prev => ({
+                ...prev,
+                [name]: error
+            }));
             setSelectedTask(prev => ({
                 ...prev,
                 [name]: value
             }));
         }
 
+        // Handle create dialog
         if (isCreateDialogOpen) {
+            const error = validateField(name, value);
+            setErrors(prev => ({
+                ...prev,
+                [name]: error
+            }));
             setNewTask(prev => ({
                 ...prev,
                 [name]: value
@@ -917,15 +1035,36 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
         }
     };
 
-    const handleSaveNewTask = () => {
-        const newTaskEntry = {
-            id: tasks.length + 1,
-            ...newTask,
-            assignedTime: new Date().toLocaleString()
-        };
+    // Validate all fields before saving
+    const validateForm = (task) => {
+        const newErrors = {};
+        let isValid = true;
 
-        setTasks(prev => [...prev, newTaskEntry]);
-        handleCloseCreateDialog();
+        Object.keys(task).forEach(key => {
+            if (key !== 'attachment' && key !== 'comments') {
+                const error = validateField(key, task[key]);
+                if (error) {
+                    newErrors[key] = error;
+                    isValid = false;
+                }
+            }
+        });
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    // Modified save handlers with validation
+    const handleSaveNewTask = () => {
+        if (validateForm(newTask)) {
+            const newTaskEntry = {
+                id: tasks.length + 1,
+                ...newTask,
+                assignedTime: new Date(newTask.assignedTime).toLocaleString()
+            };
+            setTasks(prev => [...prev, newTaskEntry]);
+            handleCloseCreateDialog();
+        }
     };
 
     // Filtering logic
@@ -944,6 +1083,13 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
 
     return (
         <Box>
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+                {statsData.map((stat, index) => (
+                    <Grid item xs={12} sm={4} key={index}>
+                        <StatsCard {...stat} />
+                    </Grid>
+                ))}
+            </Grid>
             <Box sx={{ bgcolor: 'white', border: 1, borderColor: 'grey.200', borderRadius: 1 }}>
                 <TableContainer component={Paper}>
                     <Table>
@@ -1040,10 +1186,11 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                         </TableBody>
                     </Table>
                     <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
+                        // rowsPerPageOptions={[5, 10, 25]}
                         component="div"
                         count={filteredTasks.length}
                         rowsPerPage={rowsPerPage}
+                        rowsPerPageOptions={[]}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
@@ -1147,8 +1294,10 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                 onChange={handleInputChange}
                                 fullWidth
                                 required
+                                error={!!errors.taskName}
+                                helperText={errors.taskName}
                             />
-                            <FormControl fullWidth required>
+                            <FormControl fullWidth required error={!!errors.severity}>
                                 <InputLabel>Severity</InputLabel>
                                 <Select
                                     name="severity"
@@ -1160,21 +1309,25 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                         <MenuItem key={option} value={option}>{option}</MenuItem>
                                     ))}
                                 </Select>
+                                {errors.severity && <FormHelperText>{errors.severity}</FormHelperText>}
                             </FormControl>
-                            <FormControl fullWidth required>
+                            <FormControl fullWidth required error={!!errors.assignedTo}>
                                 <InputLabel>Assigned To</InputLabel>
                                 <Select
                                     name="assignedTo"
                                     value={newTask.assignedTo}
                                     onChange={handleInputChange}
                                     label="Assigned to"
+                                    defaultValue="unassigned"
                                 >
+                                    <MenuItem value="unassigned">Unassigned</MenuItem>
                                     <MenuItem value="user1">User 1</MenuItem>
                                     <MenuItem value="user2">User 2</MenuItem>
                                     <MenuItem value="user3">User 3</MenuItem>
                                 </Select>
+                                {errors.assignedTo && <FormHelperText>{errors.assignedTo}</FormHelperText>}
                             </FormControl>
-                            <FormControl fullWidth required>
+                            <FormControl fullWidth required error={!!errors.status}>
                                 <InputLabel>Status</InputLabel>
                                 <Select
                                     name="status"
@@ -1186,6 +1339,7 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                         <MenuItem key={option} value={option}>{option}</MenuItem>
                                     ))}
                                 </Select>
+                                {errors.status && <FormHelperText>{errors.status}</FormHelperText>}
                             </FormControl>
                             <TextField
                                 label="Assigned time"
@@ -1195,6 +1349,8 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                 onChange={handleInputChange}
                                 fullWidth
                                 required
+                                error={!!errors.assignedTime}
+                                helperText={errors.assignedTime}
                                 InputLabelProps={{ shrink: true }}
                             />
 
@@ -1207,7 +1363,7 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                 }}
                             />
 
-                            <TextField
+                            {/* <TextField
                                 label="Comment box"
                                 name="comments"
                                 value={newTask.comments}
@@ -1215,10 +1371,29 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                 multiline
                                 rows={4}
                                 fullWidth
-                            />
+                            /> */}
+                            <ReactQuill
+    value={newTask.comments}
+    onChange={(content) => handleInputChange({
+        target: { name: 'comments', value: content }
+    })}
+    placeholder="Add task description here..."
+    style={{ height: '200px', marginBottom: '50px' }}
+    modules={{
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link'],
+            ['clean']
+        ],
+    }}
+/>
 
                             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
-                                <Button variant="contained" onClick={handleSaveNewTask}>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleSaveNewTask}
+                                >
                                     Create task
                                 </Button>
                                 <Button variant="outlined" onClick={onCloseCreateDialog}>

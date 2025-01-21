@@ -21,9 +21,9 @@ export default function AssignedTask() {
             <PageHeader 
                 title='Task Assigned' 
                 subheader='Task Assigned to user' 
-                buttontext="Add Task" 
-                userHasHigherRole={userHasHigherRole}
-                onButtonClick={handleAddTask}  
+                // buttontext="Add Task" 
+                // userHasHigherRole={userHasHigherRole}
+                // onButtonClick={handleAddTask}  
             />
             <RequestsDashboard userHasHigherRole={userHasHigherRole}/>
         </Box>
