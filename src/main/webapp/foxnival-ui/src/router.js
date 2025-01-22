@@ -92,7 +92,6 @@ import ProtectedSidebar from "./components/layout/ProtectedSidebar";
 import ProtectedNavbar from "./components/layout/ProtectedNavbar";
 import Subscribers from "./components/dashboard/subscribers";
 
-
 export const router = createBrowserRouter([
     {
         path: "/",

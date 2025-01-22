@@ -5,11 +5,9 @@ const PageHeader = ({
   title,
   subheader,
   buttontext,
-  userHasHigherRole = false,
   onButtonClick,
   showButton = true
 }) => {
-  const shouldShowButton = showButton && userHasHigherRole && buttontext && onButtonClick;
 
   return (
     <Box
@@ -30,7 +28,6 @@ const PageHeader = ({
           </Typography>
         )}
       </Box>
-      {shouldShowButton && (
         <Button
           variant="contained"
           color="primary"
@@ -39,7 +36,6 @@ const PageHeader = ({
         >
           {buttontext}
         </Button>
-      )}
     </Box>
   );
 };

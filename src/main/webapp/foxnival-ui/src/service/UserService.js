@@ -11,7 +11,17 @@ const userServiceApi = {
         return axios.get(`${API_BASE_URL}/users/fetchAll`);
     },
 
+    addUser: (user) => {
+        return axios.post(`${API_BASE_URL}/users/add`, user);
+    },
 
+    getUsersBySubscriberId: (subscriberId) => {
+        return axios.get(`${API_BASE_URL}/users/subscribers/${subscriberId}`);
+    },
+    
+    deleteUser: (userId) => {
+        return axios.delete(`${API_BASE_URL}/users/${userId}`);
+    }
 }
 
 export default userServiceApi;

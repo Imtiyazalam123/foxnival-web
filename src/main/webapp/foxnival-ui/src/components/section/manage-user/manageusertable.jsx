@@ -434,15 +434,18 @@
 // export default UserManagementDashboard;
 
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Paper, TablePagination, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
+import userServiceApi from '../../../service/UserService';
+import { HR, MANAGER, RECEPTIONIST, SALES_REPRESENTATIVE, TELECALLER } from '../../../constant/Role';
+import { toast } from 'react-toastify';
 
-const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
+const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subscriberId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -452,59 +455,36 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
   const [filterStatus, setFilterStatus] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [newUser, setNewUser] = useState({
-    id: null,
     name: '',
     email: '',
     designation: '',
-    status: '',
-    mobileNo: ''
+    mobileNo: '',
+    confirmPassword: ''
   });
 
   const designationOptions = [
-    'Receptionist',
-    'Manager',
-    'Telecaller',
-    'HR',
-    'Sales Representative'
+    MANAGER,
+    RECEPTIONIST,
+    TELECALLER,
+    HR,
+    SALES_REPRESENTATIVE
   ];
 
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: 'Ram Sharma',
-      designation: 'Receptionist Director',
-      status: 'Active',
-      mobileNo: '9898989898'
-    },
-    {
-      id: 2,
-      name: 'Shyam Sundar',
-      designation: 'Manager counsellor',
-      status: 'Active',
-      mobileNo: '9797979797'
-    },
-    {
-      id: 3,
-      name: 'Salman Khan',
-      designation: 'Telecaller',
-      status: 'Active',
-      mobileNo: '9696969696'
-    },
-    {
-      id: 4,
-      name: 'Sohil Khan',
-      designation: 'Manager counsellor',
-      status: 'Active',
-      mobileNo: '9494949494'
-    },
-    {
-      id: 5,
-      name: 'Konal Yadav',
-      designation: 'Telecaller',
-      status: 'Inactive',
-      mobileNo: '9393939399'
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    if (subscriberId) {
+      userServiceApi.getUsersBySubscriberId(subscriberId)
+        .then(response => {
+          setUsers(response.data);
+          toast.success("Users fetched successfully.");
+        })
+        .catch(error => {
+          toast.error("Error while fetching users.");
+          console.error("Error while fetching users:", error);
+        });
     }
-  ]);
+  }, [subscriberId]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -530,9 +510,33 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
   };
 
   const handleSaveNewUser = () => {
-    const newUserId = users.length > 0 ? Math.max(...users.map(user => user.id)) + 1 : 1;
-    const updatedUsers = [...users, { ...newUser, id: newUserId }];
-    setUsers(updatedUsers);
+    console.log("save ", newUser);
+    const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+    const userRequest = {
+      subscriberId: loggedInUser?.subscriber?.id,
+      name: newUser.name,
+      username: newUser.email,
+      mobile: newUser.mobileNo,
+      password: newUser.confirmPassword,
+      role: newUser.designation,
+    };
+
+    userServiceApi.addUser(userRequest)
+      .then(response => {
+        console.log("User added successfully:", response.data);
+
+        const newUserId = response.data.id;
+        const updatedUsers = [...users, { ...newUser, id: newUserId }];
+        setUsers(updatedUsers);
+        toast.success("User Created Successfully.");
+      })
+      .catch(error => {
+
+        if (error?.response?.status === 400) {
+          toast.error(error?.response?.data?.errorMessage || "Error while adding user");
+        }
+        console.error("Error while adding user:", error);
+      });
     onCloseCreateDialog();
   };
 
@@ -543,8 +547,10 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
   };
 
   const handleSaveEditedUser = () => {
-    const updatedUsers = users.map(user => user.id === newUser.id ? newUser : user);
-    setUsers(updatedUsers);
+    console.log("save ", newUser);
+
+    // const updatedUsers = users.map(user => user.id === newUser.id ? newUser : user);
+    // setUsers(updatedUsers);
     handleCloseEditDialog();
   };
 
@@ -554,8 +560,16 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
   };
 
   const handleConfirmDeleteUser = () => {
-    const updatedUsers = users.filter(user => user.id !== selectedUser.id);
-    setUsers(updatedUsers);
+    userServiceApi.deleteUser(selectedUser.id)
+      .then(() => {
+        toast.success("User deleted successfully.");
+        const updatedUsers = users.filter(user => user.id !== selectedUser.id);
+        setUsers(updatedUsers);
+      })
+      .catch(error => {
+        toast.error("Error while deleting user.");
+        console.error("Error while deleting user:", error);
+      });
     handleCloseDeleteDialog();
   };
 
@@ -584,9 +598,11 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
   };
 
   const filteredUsers = useMemo(() => {
+    console.log("filder status ", filterStatus);
+
     return users.filter(user =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (filterStatus === '' || user.status === filterStatus)
+      (filterStatus === '' || (user.active ? 'Active' : 'Inactive') === filterStatus)
     );
   }, [users, searchQuery, filterStatus]);
 
@@ -614,16 +630,16 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
                       '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
                       '& .MuiInput-underline:after': { borderBottom: 'none' },
                       '& .MuiInputBase-input': {
-                          fontWeight: 'bold',
-                          color: 'rgba(0, 0, 0, 0.87)',
-                          fontSize: '14px',
-                          fontFamily: 'inherit'
+                        fontWeight: 'bold',
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit'
                       },
                       '& .MuiInputBase-input::placeholder': {
-                          color: 'rgba(0, 0, 0, 0.87)',
-                          opacity: 1
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        opacity: 1
                       }
-                  }}
+                    }}
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Designation</TableCell>
@@ -656,9 +672,9 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
               {getCurrentPageData().map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.designation}</TableCell>
-                  <TableCell>{user.status}</TableCell>
-                  <TableCell>{user.mobileNo}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.active ? "Active" : "Inactive"}</TableCell>
+                  <TableCell>{user.mobile}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Tooltip title="Edit User" arrow placement='top'>
@@ -887,6 +903,7 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
         </DialogActions>
       </Dialog>
     </Box>
+
   );
 };
 
