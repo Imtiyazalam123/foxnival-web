@@ -36,12 +36,12 @@
 //     const [rowsPerPage, setRowsPerPage] = useState(10);
 //     const [openEditDialog, setOpenEditDialog] = useState(false);
 //     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-//     const [selectedUser, setSelectedUser] = useState(null);
+//     const [selectedCustomer, setSelectedCustomer] = useState(null);
 //     const [searchQuery, setSearchQuery] = useState('');
 //     const [filterStatus, setFilterStatus] = useState('');
 
-//     // Initial users state
-//     const [users, setUsers] = useState([
+//     // Initial customers state
+//     const [customers, setCustomers] = useState([
 //         {
 //             id: 1,
 //             name: 'Ram Sharma',
@@ -117,7 +117,7 @@
 //     ]);
 
 //     // New user state
-//     const [newUser, setNewUser] = useState({
+//     const [newCustomers, setNewCustomers] = useState({
 //         name: '',
 //         email: '',
 //         designation: '',
@@ -149,30 +149,30 @@
 
 //     // User management handlers
 //     const handleEditUser = (user) => {
-//         setSelectedUser(user);
+//         setSelectedCustomer(user);
 //         setOpenEditDialog(true);
 //     };
 
 //     const handleSaveEditedUser = () => {
-//         if (selectedUser) {
-//             const updatedUsers = users.map(user =>
-//                 user.id === selectedUser.id ? selectedUser : user
+//         if (selectedCustomer) {
+//             const updatedcustomers = customers.map(user =>
+//                 user.id === selectedCustomer.id ? selectedCustomer : user
 //             );
-//             setUsers(updatedUsers);
+//             setCustomers(updatedcustomers);
 //             handleCloseEditDialog();
 //         }
 //     };
 
-//     const handleDeleteUser = (userId) => {
-//         const userToDelete = users.find(user => user.id === userId);
-//         setSelectedUser(userToDelete || null);
+//     const handleDeleteCustomer = (userId) => {
+//         const userToDelete = customers.find(user => user.id === userId);
+//         setSelectedCustomer(userToDelete || null);
 //         setOpenDeleteDialog(true);
 //     };
 
-//     const handleConfirmDeleteUser = () => {
-//         if (selectedUser) {
-//             const updatedUsers = users.filter(user => user.id !== selectedUser.id);
-//             setUsers(updatedUsers);
+//     const handleConfirmDeleteCustomer = () => {
+//         if (selectedCustomer) {
+//             const updatedcustomers = customers.filter(user => user.id !== selectedCustomer.id);
+//             setCustomers(updatedcustomers);
 //             handleCloseDeleteDialog();
 //         }
 //     };
@@ -180,17 +180,17 @@
 //     // Dialog close handlers
 //     const handleCloseEditDialog = () => {
 //         setOpenEditDialog(false);
-//         setSelectedUser(null);
+//         setSelectedCustomer(null);
 //     };
 
 //     const handleCloseDeleteDialog = () => {
 //         setOpenDeleteDialog(false);
-//         setSelectedUser(null);
+//         setSelectedCustomer(null);
 //     };
 
 //     const handleCloseCreateDialog = () => {
 //         onCloseCreateDialog();
-//         setNewUser({
+//         setNewCustomers({
 //             name: '',
 //             email: '',
 //             designation: '',
@@ -204,53 +204,53 @@
 //     const handleInputChange = (event) => {
 //         const { name, value } = event.target;
 
-//         if (openEditDialog && selectedUser) {
-//             setSelectedUser(prev => ({
+//         if (openEditDialog && selectedCustomer) {
+//             setSelectedCustomer(prev => ({
 //                 ...prev,
 //                 [name]: value
 //             }));
 //         }
 
 //         if (isCreateDialogOpen) {
-//             setNewUser(prev => ({
+//             setNewCustomers(prev => ({
 //                 ...prev,
 //                 [name]: value
 //             }));
 //         }
 //     };
 
-//     const handleSaveNewUser = () => {
+//     const handleSavenewCustomers = () => {
 //         // Validate new user input
-//         if (newUser.password !== newUser.confirmPassword) {
+//         if (newCustomers.password !== newCustomers.confirmPassword) {
 //             alert('Passwords do not match');
 //             return;
 //         }
 
-//         const newUserEntry = {
-//             id: users.length + 1,
-//             name: newUser.name,
-//             phoneNo: newUser.mobileNo,
+//         const newCustomersEntry = {
+//             id: customers.length + 1,
+//             name: newCustomers.name,
+//             phoneNo: newCustomers.mobileNo,
 //             purpose: 'Enquiry', // Default purpose
 //             source: 'offline',  // Default source
-//             email: newUser.email
+//             email: newCustomers.email
 //         };
 
-//         setUsers(prev => [...prev, newUserEntry]);
+//         setCustomers(prev => [...prev, newCustomersEntry]);
 //         handleCloseCreateDialog();
 //     };
 
 //     // Filtering logic
-//     const filteredUsers = useMemo(() => {
-//         return users.filter(user =>
+//     const filteredcustomers = useMemo(() => {
+//         return customers.filter(user =>
 //             user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
 //             (filterStatus === '' || user.source === filterStatus)
 //         );
-//     }, [users, searchQuery, filterStatus]);
+//     }, [customers, searchQuery, filterStatus]);
 
 //     // Pagination logic
 //     const getCurrentPageData = () => {
 //         const startIndex = page * rowsPerPage;
-//         return filteredUsers.slice(startIndex, startIndex + rowsPerPage);
+//         return filteredcustomers.slice(startIndex, startIndex + rowsPerPage);
 //     };
 
 //     return (
@@ -316,7 +316,7 @@
 //                                                 variant="outlined"
 //                                                 color="error"
 //                                                 size="small"
-//                                                 onClick={() => handleDeleteUser(user.id)}
+//                                                 onClick={() => handleDeleteCustomer(user.id)}
 //                                             >
 //                                                 Delete
 //                                             </Button>
@@ -329,7 +329,7 @@
 //                     <TablePagination
 //                         rowsPerPageOptions={[5, 10, 25]}
 //                         component="div"
-//                         count={filteredUsers.length}
+//                         count={filteredcustomers.length}
 //                         rowsPerPage={rowsPerPage}
 //                         page={page}
 //                         onPageChange={handleChangePage}
@@ -356,7 +356,7 @@
 //                         fullWidth
 //                         variant="standard"
 //                         name="name"
-//                         value={selectedUser?.name || ''}
+//                         value={selectedCustomer?.name || ''}
 //                         onChange={handleInputChange}
 //                     />
 //                     <TextField
@@ -367,7 +367,7 @@
 //                         fullWidth
 //                         variant="standard"
 //                         name="phoneNo"
-//                         value={selectedUser?.phoneNo || ''}
+//                         value={selectedCustomer?.phoneNo || ''}
 //                         onChange={handleInputChange}
 //                     />
 //                     <TextField
@@ -378,7 +378,7 @@
 //                         fullWidth
 //                         variant="standard"
 //                         name="purpose"
-//                         value={selectedUser?.purpose || ''}
+//                         value={selectedCustomer?.purpose || ''}
 //                         onChange={handleInputChange}
 //                     />
 //                     <FormControl variant="standard" fullWidth>
@@ -387,7 +387,7 @@
 //                             labelId="source-label"
 //                             id="source"
 //                             name="source"
-//                             value={selectedUser?.source || ''}
+//                             value={selectedCustomer?.source || ''}
 //                             onChange={handleInputChange}
 //                         >
 //                             <MenuItem value="online">Online</MenuItem>
@@ -402,7 +402,7 @@
 //                         fullWidth
 //                         variant="standard"
 //                         name="email"
-//                         value={selectedUser?.email || ''}
+//                         value={selectedCustomer?.email || ''}
 //                         onChange={handleInputChange}
 //                     />
 //                 </DialogContent>
@@ -427,11 +427,11 @@
 //                     Confirm Delete
 //                 </DialogTitle>
 //                 <DialogContent id="alert-dialog-description">
-//                     Are you sure you want to delete {selectedUser?.name}?
+//                     Are you sure you want to delete {selectedCustomer?.name}?
 //                 </DialogContent>
 //                 <DialogActions>
 //                     <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-//                     <Button onClick={handleConfirmDeleteUser} color="error">
+//                     <Button onClick={handleConfirmDeleteCustomer} color="error">
 //                         Delete
 //                     </Button>
 //                 </DialogActions>
@@ -536,7 +536,7 @@
 // export default RegisteredCustomerTable;
 
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Box, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Paper, TablePagination, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -544,99 +544,28 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
+import { toast } from 'react-toastify';
+import customerServiceApi from '../../../service/CustomerService';
 
-const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
+const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog, subscriberId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [users, setUsers] = useState([
-            {
-                id: 1,
-                name: 'Ram Sharma',
-                phoneNo: '9898989898',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'ram@example.com'
-            },
-            {
-                id: 2,
-                name: 'Shyam Rajput',
-                phoneNo: '8787878787',
-                purpose: 'Enquiry',
-                source: 'online',
-                email: 'shyam@example.com'
-            },
-            {
-                id: 3,
-                name: 'Rohit',
-                phoneNo: '5267825672',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'rohit@example.com'
-            },
-            {
-                id: 4,
-                name: 'Hema',
-                phoneNo: '9256872357',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'hema@example.com'
-            },
-            {
-                id: 5,
-                name: 'Salim',
-                phoneNo: '8562335548',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'salim@example.com'
-            },
-            {
-                id: 6,
-                name: 'Ramu',
-                phoneNo: '8259613345',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'ramu@example.com'
-            },
-            {
-                id: 7,
-                name: 'Karan',
-                phoneNo: '9334215796',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'karan@example.com'
-            },
-            {
-                id: 8,
-                name: 'Vivek',
-                phoneNo: '9112387625',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'vivek@example.com'
-            },
-            {
-                id: 9,
-                name: 'Aarodhya',
-                phoneNo: '9325675942',
-                purpose: 'Enquiry',
-                source: 'offline',
-                email: 'aarodhya@example.com'
-            }
-        ]);
+  const [customers, setCustomers] = useState([]);
 
-  const [newUser, setNewUser] = useState({
+  const [newCustomers, setNewCustomers] = useState({
     name: '',
-    email: '',
-    designation: '',
     mobileNo: '',
-    password: '',
-    confirmPassword: ''
+    purpose: '',
+    source: '',
+    email: '',
+    comments: ''
   });
 
   const handleChangePage = (event, newPage) => setPage(newPage);
@@ -653,65 +582,135 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
     handleCloseFilter();
   };
 
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
+  const handleEditUser = (customer) => {
+    setSelectedCustomer(customer);
     setOpenEditDialog(true);
   };
 
   const handleSaveEditedUser = () => {
-    if (selectedUser) {
-      const updatedUsers = users.map(user =>
-        user.id === selectedUser.id ? selectedUser : user
-      );
-      setUsers(updatedUsers);
-      handleCloseEditDialog();
+    if (selectedCustomer && subscriberId) {
+      let updatDetails = {
+        name: selectedCustomer.name,
+        mobileNo: selectedCustomer.mobileNo,
+        purpose: selectedCustomer.purpose,
+        source: selectedCustomer.source,
+        email: selectedCustomer.email,
+        comments: selectedCustomer.comments
+      }
+
+      customerServiceApi.updateCustomerDetails(selectedCustomer?.id, subscriberId, updatDetails)
+        .then(response => {
+          const updatedcustomers = customers.map(customer =>
+            customer.id === selectedCustomer?.id ? response?.data : customer
+          );
+          setCustomers(updatedcustomers);
+          toast.success("Customer updated successfully.");
+          handleCloseEditDialog();
+        })
+        .catch(error => {
+          toast.error("Error while updating customer.");
+          console.error("Error while updating customer:", error);
+        });
     }
   };
 
-  const handleDeleteUser = (userId) => {
-    const userToDelete = users.find(user => user.id === userId);
-    setSelectedUser(userToDelete || null);
+  const handleDeleteCustomer = (custId) => {
+    const customerToDelete = customers.find(customer => customer?.id === custId);
+    setSelectedCustomer(customerToDelete || null);
     setOpenDeleteDialog(true);
   };
 
-  const handleConfirmDeleteUser = () => {
-    if (selectedUser) {
-      const updatedUsers = users.filter(user => user.id !== selectedUser.id);
-      setUsers(updatedUsers);
-      handleCloseDeleteDialog();
+  const handleConfirmDeleteCustomer = () => {
+    if (selectedCustomer) {
+      customerServiceApi.deleteCustomerById(selectedCustomer?.id)
+        .then(() => {
+          const updatedCustomer = customers.filter(customer => customer.id !== selectedCustomer?.id);
+          setCustomers(updatedCustomer);
+          toast.success("Customer deleted successfully.");
+          handleCloseDeleteDialog();
+        })
+        .catch(error => {
+          toast.error("Error while deleting customer.");
+          console.error("Error while deleting customer:", error);
+        });
     }
   };
 
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
-    setSelectedUser(null);
+    setSelectedCustomer(null);
   };
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
-    setSelectedUser(null);
+    setSelectedCustomer(null);
   };
 
+  useEffect(() => {
+    if (subscriberId) {
+      customerServiceApi.getCustomerDetailsBySubscriberId(subscriberId)
+        .then(response => {
+          setCustomers(response.data);
+          toast.success("Customers fetched successfully.");
+        })
+        .catch(error => {
+          toast.error("Error while fetching customers.");
+          console.error("Error while fetching customers:", error);
+        });
+    }
+  }, [subscriberId]);
+
+  const handleRegisterInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewCustomers(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegisterCustomer = () => {
+    const newCustomersEntry = {
+      subscriberId: subscriberId,
+      name: newCustomers.name,
+      mobileNo: newCustomers.mobileNo,
+      purpose: newCustomers.purpose,
+      source: newCustomers.source,
+      email: newCustomers.email,
+      comments: newCustomers.comments
+    };
+
+    customerServiceApi.addCustomerDetails(newCustomersEntry)
+      .then(response => {
+        console.log("Register customer successfully:", response.data);
+        setCustomers(prevcustomers => [...prevcustomers, response.data]);
+        toast.success("User Created Successfully.");
+        onCloseCreateDialog();
+        setNewCustomers({});
+      })
+      .catch(error => {
+        if (error?.response?.status === 400) {
+          toast.error(error?.response?.data?.errorMessage || "Error while registering customer.");
+        }
+        console.error("Error while registering customer: ", error);
+      });
+  }
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (openEditDialog && selectedUser) {
-      setSelectedUser(prev => ({ ...prev, [name]: value }));
+    if (openEditDialog && selectedCustomer) {
+      setSelectedCustomer(prev => ({ ...prev, [name]: value }));
     }
     if (isCreateDialogOpen) {
-      setNewUser(prev => ({ ...prev, [name]: value }));
+      setNewCustomers(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  const filteredUsers = useMemo(() => {
-    return users.filter(user =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (filterStatus === '' || user.source === filterStatus)
+  const filteredcustomers = useMemo(() => {
+    return customers.filter(customer =>
+      customer?.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (filterStatus === '' || customer.source === filterStatus)
     );
-  }, [users, searchQuery, filterStatus]);
+  }, [customers, searchQuery, filterStatus]);
 
   const getCurrentPageData = () => {
     const startIndex = page * rowsPerPage;
-    return filteredUsers.slice(startIndex, startIndex + rowsPerPage);
+    return filteredcustomers.slice(startIndex, startIndex + rowsPerPage);
   };
 
   return (
@@ -733,16 +732,16 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
                       '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
                       '& .MuiInput-underline:after': { borderBottom: 'none' },
                       '& .MuiInputBase-input': {
-                          fontWeight: 'bold',
-                          color: 'rgba(0, 0, 0, 0.87)',
-                          fontSize: '14px',
-                          fontFamily: 'inherit'
+                        fontWeight: 'bold',
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit'
                       },
                       '& .MuiInputBase-input::placeholder': {
-                          color: 'rgba(0, 0, 0, 0.87)',
-                          opacity: 1
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        opacity: 1
                       }
-                  }}
+                    }}
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Phone Number</TableCell>
@@ -763,8 +762,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
                   >
                     <Box sx={{ p: 1 }}>
                       <MenuItem onClick={() => handleFilterChange('')}>All</MenuItem>
-                      <MenuItem onClick={() => handleFilterChange('online')}>Online</MenuItem>
-                      <MenuItem onClick={() => handleFilterChange('offline')}>Offline</MenuItem>
+                      <MenuItem onClick={() => handleFilterChange('Online')}>Online</MenuItem>
+                      <MenuItem onClick={() => handleFilterChange('Offline')}>Offline</MenuItem>
                     </Box>
                   </Popover>
                 </TableCell>
@@ -773,20 +772,20 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
               </TableRow>
             </TableHead>
             <TableBody>
-              {getCurrentPageData().map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.phoneNo}</TableCell>
-                  <TableCell>{user.purpose}</TableCell>
-                  <TableCell>{user.source}</TableCell>
-                  <TableCell>{user.email || 'N/A'}</TableCell>
+              {getCurrentPageData().map((customer) => (
+                <TableRow key={customer?.id}>
+                  <TableCell>{customer?.name}</TableCell>
+                  <TableCell>{customer?.mobileNo}</TableCell>
+                  <TableCell>{customer?.purpose}</TableCell>
+                  <TableCell>{customer?.source}</TableCell>
+                  <TableCell>{customer?.email || 'N/A'}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Tooltip title="Edit Customer" arrow placement='top'>
                         <IconButton
                           size="small"
                           color="primary"
-                          onClick={() => handleEditUser(user)}
+                          onClick={() => handleEditUser(customer)}
                         >
                           <EditIcon />
                         </IconButton>
@@ -795,7 +794,7 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
                         <IconButton
                           size="small"
                           color="error"
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => handleDeleteCustomer(customer?.id)}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -809,7 +808,7 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={filteredUsers.length}
+            count={filteredcustomers.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -831,7 +830,7 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="name"
-            value={selectedUser?.name || ''}
+            value={selectedCustomer?.name || ''}
             onChange={handleInputChange}
           />
           <TextField
@@ -841,8 +840,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             type="text"
             fullWidth
             variant="standard"
-            name="phoneNo"
-            value={selectedUser?.phoneNo || ''}
+            name="mobileNo"
+            value={selectedCustomer?.mobileNo || ''}
             onChange={handleInputChange}
           />
           <TextField
@@ -853,7 +852,7 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="purpose"
-            value={selectedUser?.purpose || ''}
+            value={selectedCustomer?.purpose || ''}
             onChange={handleInputChange}
           />
           <FormControl variant="standard" fullWidth>
@@ -862,11 +861,11 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
               labelId="source-label"
               id="source"
               name="source"
-              value={selectedUser?.source || ''}
+              value={selectedCustomer?.source || ''}
               onChange={handleInputChange}
             >
-              <MenuItem value="online">Online</MenuItem>
-              <MenuItem value="offline">Offline</MenuItem>
+              <MenuItem value="Online">Online</MenuItem>
+              <MenuItem value="Offline">Offline</MenuItem>
             </Select>
           </FormControl>
           <TextField
@@ -877,9 +876,24 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="email"
-            value={selectedUser?.email || ''}
+            value={selectedCustomer?.email || ''}
             onChange={handleInputChange}
           />
+
+          <TextField
+            margin="dense"
+            id="comments"
+            label="Comments"
+            type="text"
+            multiline
+            rows={3}
+            fullWidth
+            variant="standard"
+            name="comments"
+            value={selectedCustomer?.comments || ''}
+            onChange={handleInputChange}
+          />
+
         </DialogContent>
         <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
           <Button variant='contained' onClick={handleSaveEditedUser}>Save</Button>
@@ -895,11 +909,11 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
       >
         <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
         <DialogContent id="alert-dialog-description">
-          Are you sure you want to delete {selectedUser?.name}?
+          Are you sure you want to delete {selectedCustomer?.name}?
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-          <Button onClick={handleConfirmDeleteUser} color="error">Delete</Button>
+          <Button onClick={handleConfirmDeleteCustomer} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
 
@@ -916,6 +930,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="name"
+            value={newCustomers.name}
+            onChange={handleRegisterInputChange}
           />
           <TextField
             margin="dense"
@@ -924,7 +940,9 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             type="text"
             fullWidth
             variant="standard"
-            name="phone"
+            name="mobileNo"
+            value={newCustomers.mobileNo}
+            onChange={handleRegisterInputChange}
           />
           <TextField
             margin="dense"
@@ -934,6 +952,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="purpose"
+            value={newCustomers.purpose}
+            onChange={handleRegisterInputChange}
           />
           <FormControl variant="standard" fullWidth margin="dense">
             <InputLabel id="source-label">Source</InputLabel>
@@ -941,9 +961,11 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
               labelId="source-label"
               id="source"
               name="source"
+              value={newCustomers.source}
+              onChange={handleRegisterInputChange}
             >
-              <MenuItem value="online">Online</MenuItem>
-              <MenuItem value="offline">Offline</MenuItem>
+              <MenuItem value="Online">Online</MenuItem>
+              <MenuItem value="Offline">Offline</MenuItem>
             </Select>
           </FormControl>
           <TextField
@@ -954,6 +976,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="email"
+            value={newCustomers.email}
+            onChange={handleRegisterInputChange}
           />
           <TextField
             margin="dense"
@@ -965,10 +989,12 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog }) =>
             fullWidth
             variant="standard"
             name="comments"
+            value={newCustomers.comments}
+            onChange={handleRegisterInputChange}
           />
         </DialogContent>
         <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
-          <Button variant='contained'>Register</Button>
+          <Button variant='contained' onClick={handleRegisterCustomer}>Register</Button>
           <Button variant='outlined' onClick={onCloseCreateDialog}>Cancel</Button>
         </DialogActions>
       </Dialog>
