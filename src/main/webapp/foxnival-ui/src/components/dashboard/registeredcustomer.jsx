@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RegisteredCustomerTable from '../section/registeredcustomer/registeredcustomertable';
 import PageHeader from '../pageheader/pageheader';
 
 export default function RegisteredCustomer() {
     const [isRegisterCustomerDialogOpen, setIsRegisterCustomerDialogOpen] = useState(false);
+    const [subscriberId, setSubscriberId] = useState(null);
 
     const handleRegisterCustomer = () => {
         setIsRegisterCustomerDialogOpen(true);
@@ -12,6 +13,15 @@ export default function RegisteredCustomer() {
     const handleCloseRegisterCustomerDialog = () => {
         setIsRegisterCustomerDialogOpen(false);
     };
+
+    useEffect(() => {
+        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        if (loggedinUser && loggedinUser.subscriber) {
+            setSubscriberId(loggedinUser.subscriber.id);
+        } else {
+            setSubscriberId(null);
+        }
+    }, []);
 
     return (
         <div className="w-full">
@@ -24,6 +34,7 @@ export default function RegisteredCustomer() {
             <RegisteredCustomerTable
                 isCreateDialogOpen={isRegisterCustomerDialogOpen}
                 onCloseCreateDialog={handleCloseRegisterCustomerDialog}
+                subscriberId={subscriberId}
             />
         </div>
     );

@@ -525,9 +525,8 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
       .then(response => {
         console.log("User added successfully:", response.data);
 
-        const newUserId = response.data.id;
-        const updatedUsers = [...users, { ...newUser, id: newUserId }];
-        setUsers(updatedUsers);
+        
+        setUsers(prevUsers => [...prevUsers, response.data]);
         toast.success("User Created Successfully.");
       })
       .catch(error => {
