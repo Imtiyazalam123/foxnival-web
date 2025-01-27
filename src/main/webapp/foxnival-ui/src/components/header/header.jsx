@@ -1,198 +1,275 @@
-// import { useState } from 'react'; // Add this for useState hook
-// import { 
-//   AppBar, 
-//   Toolbar, 
-//   Typography, 
-//   IconButton, 
-//   Menu, 
-//   MenuItem 
-// } from "@mui/material";
-// import { AccountCircle, Notifications } from '@mui/icons-material'; // Add icons import
+// import React, { useState } from 'react';
+// import { AppBar, Toolbar, Typography, IconButton, Badge, Box, Avatar, Button } from '@mui/material';
+// import { Notifications, AccountCircle, Settings } from '@mui/icons-material';
+// import { useNavigate } from 'react-router-dom';
+// import AccountDrawer from '../section/useraccount/accountsettings';
+// import AccountSettings from '../section/useraccount/accountsettings';
+// import AccountDashboard from '../section/useraccount/accountdashboard';
 
 // const Header = () => {
-//     const [anchorEl, setAnchorEl] = useState(null);
-  
-//     const handleMenu = (event) => {
-//       setAnchorEl(event.currentTarget);
-//     };
-  
-//     const handleClose = () => {
-//       setAnchorEl(null);
-//     };
-  
-//     return (
-//       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
+//   const [notificationAnchor, setNotificationAnchor] = useState(null);
+//   const [notifications] = useState([
+//     { id: 1, text: 'New task assigned', time: '5m ago' },
+//     { id: 2, text: 'Meeting reminder', time: '10m ago' },
+//     { id: 3, text: 'Project update', time: '1h ago' }
+//   ]);
+
+//   const [accountDrawerOpen, setAccountDrawerOpen] = useState(false);
+//   const [formData, setFormData] = useState({
+//     firstName: 'John',
+//     lastName: 'Doe',
+//     displayName: 'johndoe',
+//     email: 'johndoe@example.com',
+//     mobileNumber: '1234567890'
+//   });
+
+//   const navigate = useNavigate();
+
+//   const handleNotificationMenu = (event) => setNotificationAnchor(event.currentTarget);
+//   const handleNotificationClose = () => {
+//     setNotificationAnchor(null);
+//   };
+
+//   const handleAccountDrawerOpen = () => {
+//     setAccountDrawerOpen(true);
+//   };
+
+//   const handleAccountDrawerClose = () => {
+//     setAccountDrawerOpen(false);
+//   };
+
+//   const handlePasswordChange = ({ currentPassword, newPassword }) => {
+//     // Handle password change logic here
+//     console.log('Current Password:', currentPassword);
+//     console.log('New Password:', newPassword);
+//   };
+
+//   const handleLogout = () => {
+//     sessionStorage.clear();
+//     localStorage.clear();
+//     navigate('/login');
+//   };
+
+//   return (
+//     <React.Fragment>
+//       <AppBar
+//         position="fixed"
+//         sx={{
+//           zIndex: (theme) => theme.zIndex.drawer + 1,
+//           backgroundColor: 'white',
+//           boxShadow: '0 2px 4px rgba(0,0,0,0.08)'
+//         }}
+//       >
 //         <Toolbar>
-//           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+//           <Typography
+//             variant="h6"
+//             component="div"
+//             sx={{
+//               flexGrow: 1,
+//               color: '#1976d2',
+//               fontWeight: 'bold'
+//             }}
+//           >
 //             Company Name
 //           </Typography>
-//           <IconButton size="large" color="inherit">
-//             <Notifications />
-//           </IconButton>
-//           <div>
+
+//           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 //             <IconButton
 //               size="large"
-//               aria-controls="menu-appbar"
-//               aria-haspopup="true"
-//               onClick={handleMenu}
-//               color="inherit"
+//               onClick={handleNotificationMenu}
+//               sx={{ color: '#666' }}
 //             >
-//               <AccountCircle />
+//               <Badge badgeContent={notifications.length} color="error">
+//                 <Notifications />
+//               </Badge>
 //             </IconButton>
-//             <Menu
-//               sx={{ mt: '30px' }}
-//               id="menu-appbar"
-//               anchorEl={anchorEl}
-//               anchorOrigin={{
-//                 vertical: 'top',
-//                 horizontal: 'right',
+
+//               <IconButton
+//                 sx={{
+//                   ml: 1,
+//                   border: '2px solid #e0e0e0',
+//                   padding: '4px'
+//                 }}
+//               >
+//                 <Settings sx={{ fontSize: 28, color: '#666' }} />
+//               </IconButton>
+//             <IconButton
+//               onClick={handleAccountDrawerOpen}
+//               sx={{
+//                 ml: 1,
+//                 border: '2px solid #e0e0e0',
+//                 padding: '4px'
 //               }}
-//               keepMounted
-//               transformOrigin={{
-//                 vertical: 'top',
-//                 horizontal: 'right',
-//               }}
-//               open={Boolean(anchorEl)}
-//               onClose={handleClose}
 //             >
-//               <MenuItem onClick={handleClose}>Profile</MenuItem>
-//               <MenuItem onClick={handleClose}>My account</MenuItem>
-//               <MenuItem onClick={handleClose}>Logout</MenuItem>
-//             </Menu>
-//           </div>
+//               <AccountCircle sx={{ fontSize: 28, color: '#666' }} />
+//             </IconButton>
+
+//           </Box>
 //         </Toolbar>
 //       </AppBar>
-//     );
-//   };
+
+//       <AccountDashboard
+//   open={accountDrawerOpen}
+//   onClose={handleAccountDrawerClose}
+//   formData={formData}
+//   onLogout={handleLogout}
+// />
+//     </React.Fragment>
+//   );
+// };
 
 // export default Header;
 
 
-
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Badge, Box, Avatar, Button } from '@mui/material';
-import { Notifications, Settings, ExitToApp } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, IconButton, Badge, Box } from '@mui/material';
+import { Notifications, AccountCircle, Settings } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import AccountDashboard from '../section/useraccount/accountdashboard';
+import AccountDetails from '../section/useraccount/accountdetails';
+import AccountSettings from '../section/useraccount/accountsettings';
 
 const Header = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
+  const [currentDrawer, setCurrentDrawer] = useState('dashboard');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [notifications] = useState([
     { id: 1, text: 'New task assigned', time: '5m ago' },
     { id: 2, text: 'Meeting reminder', time: '10m ago' },
     { id: 3, text: 'Project update', time: '1h ago' }
   ]);
 
+  const [formData, setFormData] = useState({
+    firstName: 'John',
+    lastName: 'Doe',
+    displayName: 'johndoe',
+    email: 'johndoe@example.com',
+    mobileNumber: '1234567890',
+    profilePhoto: '' // Add profile photo URL if available
+  });
+
   const navigate = useNavigate();
 
-  const handleProfileMenu = (event) => setAnchorEl(event.currentTarget);
   const handleNotificationMenu = (event) => setNotificationAnchor(event.currentTarget);
-  const handleClose = () => {
-    setAnchorEl(null);
-    setNotificationAnchor(null);
+  const handleNotificationClose = () => setNotificationAnchor(null);
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    // Reset to dashboard after animation completes
+    setTimeout(() => setCurrentDrawer('dashboard'), 300);
+  };
+
+  const handleDrawerOpen = () => {
+    setIsDrawerOpen(true);
+  };
+
+  const handleNavigate = (drawer) => {
+    setCurrentDrawer(drawer);
+  };
+
+  const handleBack = () => {
+    setCurrentDrawer('dashboard');
+  };
+
+  const handlePasswordChange = ({ currentPassword, newPassword }) => {
+    console.log('Password change requested', { currentPassword, newPassword });
+    // Implement password change logic here
   };
 
   const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/login")
-  }
+    navigate('/login');
+  };
 
   return (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: 'white',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.08)'
-      }}
-    >
-      <Toolbar>
-        <Typography 
-          variant="h6" 
-          component="div" 
-          sx={{ 
-            flexGrow: 1,
-            color: '#1976d2',
-            fontWeight: 'bold'
-          }}
-        >
-          Company Name
-        </Typography>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton
-            size="large"
-            onClick={handleNotificationMenu}
-            sx={{ color: '#666' }}
-          >
-            <Badge badgeContent={notifications.length} color="error">
-              <Notifications />
-            </Badge>
-          </IconButton>
-
-          <IconButton
-            onClick={handleProfileMenu}
-            sx={{ 
-              ml: 1,
-              border: '2px solid #e0e0e0',
-              padding: '4px'
+    <React.Fragment>
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'white',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.08)'
+        }}
+      >
+        <Toolbar>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flexGrow: 1,
+              color: '#1976d2',
+              fontWeight: 'bold'
             }}
           >
-            <Avatar sx={{ width: 32, height: 32 }} />
-          </IconButton>
-        </Box>
-
-        <Menu
-          anchorEl={notificationAnchor}
-          open={Boolean(notificationAnchor)}
-          onClose={handleClose}
-          PaperProps={{
-            sx: {
-              width: '320px',
-              maxHeight: '400px',
-              mt: 1.5
-            }
-          }}
-        >
-          <Typography sx={{ p: 2, fontWeight: 'bold', borderBottom: '1px solid #eee' }}>
-            Notifications
+            Company Name
           </Typography>
-          {notifications.map((notification) => (
-            <MenuItem key={notification.id} sx={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              borderBottom: '1px solid #f5f5f5',
-              py: 1.5
-            }}>
-              <Typography variant="body2">{notification.text}</Typography>
-              <Typography variant="caption" color="text.secondary">
-                {notification.time}
-              </Typography>
-            </MenuItem>
-          ))}
-        </Menu>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-          PaperProps={{
-            sx: { mt: 1.5 }
-          }}
-        >
-          <MenuItem onClick={handleClose}>
-            <Settings sx={{ mr: 1, fontSize: 20 }} />
-            Settings
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <ExitToApp sx={{ mr: 1, fontSize: 20 }} />
-            <Button onClick={handleLogout}>Logout</Button>
-          </MenuItem>
-        </Menu>
-      </Toolbar>
-    </AppBar>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton
+              size="large"
+              onClick={handleNotificationMenu}
+              sx={{ color: '#666' }}
+            >
+              <Badge badgeContent={notifications.length} color="error">
+                <Notifications />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              sx={{
+                ml: 1,
+                border: '2px solid #e0e0e0',
+                padding: '4px'
+              }}
+            >
+              <Settings sx={{ fontSize: 28, color: '#666' }} />
+            </IconButton>
+
+            <IconButton
+              onClick={handleDrawerOpen}
+              sx={{
+                ml: 1,
+                border: '2px solid #e0e0e0',
+                padding: '4px'
+              }}
+            >
+              <AccountCircle sx={{ fontSize: 28, color: '#666' }} />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {currentDrawer === 'dashboard' && (
+        <AccountDashboard
+          open={isDrawerOpen}
+          onClose={handleDrawerClose}
+          formData={formData}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      )}
+      
+      {currentDrawer === 'details' && (
+        <AccountDetails
+          open={isDrawerOpen}
+          onClose={handleDrawerClose}
+          formData={formData}
+          onBack={handleBack}
+        />
+      )}
+      
+      {currentDrawer === 'settings' && (
+        <AccountSettings
+          open={isDrawerOpen}
+          onClose={handleDrawerClose}
+          formData={formData}
+          onSubmit={handlePasswordChange}
+          onLogout={handleLogout}
+          onBack={handleBack}
+        />
+      )}
+    </React.Fragment>
   );
 };
 

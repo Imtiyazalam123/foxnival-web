@@ -109,7 +109,6 @@ export const router = createBrowserRouter([
         path: "/payment",
         element: <Payment />
     },
-    // Dashboard section with its own layout
     {
         element: <ProtectedNavbar />,
         children: [
@@ -148,12 +147,8 @@ export const router = createBrowserRouter([
                         path: "/subscribers",
                         element: <Subscribers />
                     },
-                    // add layout/sidebar route logic here.
-
                 ]
-            },
-            //add root layout/navbar route logic here .
+            }
         ]
     }
-
 ]);

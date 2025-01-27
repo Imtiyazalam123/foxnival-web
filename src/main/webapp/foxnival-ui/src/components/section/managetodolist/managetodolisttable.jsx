@@ -702,6 +702,7 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
     const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+    const [assignedToSearchQuery, setAssignedToSearchQuery] = useState('');
 
     const statsData = [
         {
@@ -1071,9 +1072,10 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
     const filteredTasks = useMemo(() => {
         return tasks.filter(task =>
             task.taskName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            task.assignedTo.toLowerCase().includes(assignedToSearchQuery.toLowerCase()) &&
             (filterStatus === '' || task.status === filterStatus)
         );
-    }, [tasks, searchQuery, filterStatus]);
+    }, [tasks, searchQuery, assignedToSearchQuery, filterStatus]);
 
     // Get current page data
     const getCurrentPageData = () => {
@@ -1120,7 +1122,31 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                                     />
                                 </TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Severity</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
+                                <TableCell>
+
+                                <TextField
+                size="small"
+                variant="standard"
+                placeholder="Search by Assigned To"
+                value={assignedToSearchQuery}
+                onChange={(e) => setAssignedToSearchQuery(e.target.value)}
+                sx={{
+                    '& .MuiInput-underline:before': { borderBottom: 'none' },
+                    '& .MuiInput-underline:hover:before': { borderBottom: 'none' },
+                    '& .MuiInput-underline:after': { borderBottom: 'none' },
+                    '& .MuiInputBase-input': {
+                        fontWeight: 'bold',
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit'
+                    },
+                    '& .MuiInputBase-input::placeholder': {
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        opacity: 1
+                    }
+                }}
+            />
+                                </TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={handleOpenStatusFilter}>
                                         Status
