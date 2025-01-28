@@ -151,7 +151,6 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleNotificationMenu = (event) => setNotificationAnchor(event.currentTarget);
-  const handleNotificationClose = () => setNotificationAnchor(null);
 
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);

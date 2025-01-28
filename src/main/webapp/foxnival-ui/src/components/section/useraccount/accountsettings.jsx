@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Alert, Drawer, Box, IconButton } from '@mui/material';
-import { ArrowBack} from '@mui/icons-material';
+import { TextField, Button, Grid, Typography, Alert, Drawer, Box, IconButton, FormControlLabel, Checkbox, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { ArrowBack, ExpandMore} from '@mui/icons-material';
 
 const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }) => {
   const [form, setForm] = useState({
@@ -18,6 +18,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -52,7 +53,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
       newErrors.mobile = 'Please enter a valid mobile number';
     }
 
-    if (form.newPassword) {
+    if (showPasswordChange && form.newPassword) {
       if (!form.currentPassword) {
         newErrors.currentPassword = 'Current password is required';
       }
@@ -94,13 +95,14 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
     if (validateForm()) {
       onSubmit(form);
       setSuccessMessage('Profile updated successfully!');
-      if (form.newPassword) {
+      if (showPasswordChange && form.newPassword) {
         setForm(prev => ({
           ...prev,
           currentPassword: '',
           newPassword: '',
           confirmPassword: ''
         }));
+        setShowPasswordChange(false);
       }
     } else {
       setErrorMessage('Please fix the errors before submitting');
@@ -212,54 +214,75 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
             />
           </Box>
 
-          {/* Password Change Section */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Change Password
-            </Typography>
-            <TextField
-              label="Current Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              name="currentPassword"
-              value={form.currentPassword}
-              onChange={handleChange}
-              error={!!errors.currentPassword}
-              helperText={errors.currentPassword}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              label="New Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              name="newPassword"
-              value={form.newPassword}
-              onChange={handleChange}
-              error={!!errors.newPassword}
-              helperText={errors.newPassword}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              label="Confirm New Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              name="confirmPassword"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
-              sx={{ mt: 2 }}
+          <Box sx={{ mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={showPasswordChange}
+                  onChange={(e) => setShowPasswordChange(e.target.checked)}
+                  name="showPasswordChange"
+                />
+              }
+              label="I want to change my password"
             />
           </Box>
 
-          <Box className="flex justify-between" sx={{ mt: 3, }}> {/* Added margin top */}
+          {showPasswordChange && (
+            <Accordion sx={{ mb: 4 }}>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="password-content"
+                id="password-header"
+              >
+                <Typography>Change Password</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <TextField
+                    label="Current Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    name="currentPassword"
+                    value={form.currentPassword}
+                    onChange={handleChange}
+                    error={!!errors.currentPassword}
+                    helperText={errors.currentPassword}
+                  />
+                  
+                  <TextField
+                    label="New Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    name="newPassword"
+                    value={form.newPassword}
+                    onChange={handleChange}
+                    error={!!errors.newPassword}
+                    helperText={errors.newPassword}
+                  />
+                  
+                  <TextField
+                    label="Confirm New Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    name="confirmPassword"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                  />
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          )}
+
+          <Box sx={{ mt: 3 }}>
             <Button
               variant="contained"
               type="submit"
-              sx={{ padding: 1 }}
+              sx={{ padding: '10px 24px' }}
             >
               Save Changes
             </Button>
@@ -269,5 +292,6 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
     </Drawer>
   );
 };
+
 
 export default AccountSettings;
