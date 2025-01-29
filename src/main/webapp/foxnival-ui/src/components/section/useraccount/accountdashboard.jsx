@@ -1,16 +1,16 @@
 
 import React from 'react';
-import { 
-  Box, 
-  Button, 
+import {
+  Box,
+  Button,
   Drawer,
   Typography,
-  Avatar, 
+  Avatar,
   Divider
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
-const AccountDashboard = ({ open, onClose, formData, onLogout, onNavigate }) => {
+const AccountDashboard = ({ open, onClose, loggedInUser, formData, onLogout, onNavigate }) => {
   const handleAccountDetailsOpen = () => {
     onNavigate('details');
   };
@@ -37,12 +37,12 @@ const AccountDashboard = ({ open, onClose, formData, onLogout, onNavigate }) => 
         zIndex: (theme) => theme.zIndex.modal + 1
       }}
     >
-      <Box 
-        sx={{ 
-          p: 3, 
-          height: '100%', 
-          display: 'flex', 
-          flexDirection: 'column' 
+      <Box
+        sx={{
+          p: 3,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
         <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -51,10 +51,10 @@ const AccountDashboard = ({ open, onClose, formData, onLogout, onNavigate }) => 
           </Avatar>
           <Box>
             <Typography variant="h5">
-              {formData.firstName} {formData.lastName}
+              {loggedInUser?.name || 'NA'}
             </Typography>
             <Typography variant="h7" color="text.secondary">
-              Logged in as {formData.role || 'Manager'}
+              Logged in as {loggedInUser?.role?.charAt(0).toUpperCase() + loggedInUser?.role?.slice(1) || 'Unknown'}
             </Typography>
           </Box>
         </Box>
@@ -62,36 +62,36 @@ const AccountDashboard = ({ open, onClose, formData, onLogout, onNavigate }) => 
         <Divider sx={{ mt: 2, mb: 3, width: '100%', borderColor: '#424242', borderWidth: 2 }} />
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Button 
-  variant="outlined"
-  fullWidth
-  onClick={handleAccountDetailsOpen}
-  sx={{
-    py: 1.5,
-    borderWidth: 2,  
-    fontWeight: 'bold', 
-    '&:hover': {
-      borderColor: 'primary.main', 
-      backgroundColor: 'primary.main', 
-      color: 'white',  
-    },
-  }}
->
-  ACCOUNT DETAILS
-</Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={handleAccountDetailsOpen}
+            sx={{
+              py: 1.5,
+              borderWidth: 2,
+              fontWeight: 'bold',
+              '&:hover': {
+                borderColor: 'primary.main',
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+            }}
+          >
+            ACCOUNT DETAILS
+          </Button>
 
-          <Button 
+          <Button
             variant="outlined"
             fullWidth
             onClick={handleAccountSettingsOpen}
             sx={{
               py: 1.5,
-              borderWidth: 2,  
-              fontWeight: 'bold', 
+              borderWidth: 2,
+              fontWeight: 'bold',
               '&:hover': {
-                borderColor: 'primary.main', 
-                backgroundColor: 'primary.main', 
-                color: 'white',  
+                borderColor: 'primary.main',
+                backgroundColor: 'primary.main',
+                color: 'white',
               },
             }}
           >
@@ -100,9 +100,9 @@ const AccountDashboard = ({ open, onClose, formData, onLogout, onNavigate }) => 
         </Box>
 
         <Box sx={{ mt: 'auto', pt: 2 }}>
-          <Button 
-            variant="contained" 
-            color="error" 
+          <Button
+            variant="contained"
+            color="error"
             fullWidth
             onClick={onLogout}
             sx={{

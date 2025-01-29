@@ -129,7 +129,7 @@ import AccountDashboard from '../section/useraccount/accountdashboard';
 import AccountDetails from '../section/useraccount/accountdetails';
 import AccountSettings from '../section/useraccount/accountsettings';
 
-const Header = () => {
+const Header = ({loggedInUser}) => {
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [currentDrawer, setCurrentDrawer] = useState('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -170,10 +170,10 @@ const Header = () => {
     setCurrentDrawer('dashboard');
   };
 
-  const handlePasswordChange = ({ currentPassword, newPassword }) => {
-    console.log('Password change requested', { currentPassword, newPassword });
-    // Implement password change logic here
-  };
+  // const handlePasswordChange = ({ currentPassword, newPassword }) => {
+  //   console.log('Password change requested', { currentPassword, newPassword });
+  //   // Implement password change logic here
+  // };
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -201,7 +201,7 @@ const Header = () => {
               fontWeight: 'bold'
             }}
           >
-            Company Name
+            {loggedInUser?.subscriber?.organizationName}
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -243,6 +243,7 @@ const Header = () => {
         <AccountDashboard
           open={isDrawerOpen}
           onClose={handleDrawerClose}
+          loggedInUser={loggedInUser}
           formData={formData}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
@@ -253,7 +254,7 @@ const Header = () => {
         <AccountDetails
           open={isDrawerOpen}
           onClose={handleDrawerClose}
-          formData={formData}
+          loggedInUser={loggedInUser}
           onBack={handleBack}
         />
       )}
@@ -262,8 +263,7 @@ const Header = () => {
         <AccountSettings
           open={isDrawerOpen}
           onClose={handleDrawerClose}
-          formData={formData}
-          onSubmit={handlePasswordChange}
+          loggedInUser={loggedInUser}
           onLogout={handleLogout}
           onBack={handleBack}
         />

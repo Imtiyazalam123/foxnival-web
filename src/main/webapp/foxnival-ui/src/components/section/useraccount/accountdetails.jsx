@@ -9,7 +9,7 @@ import {
 import { ArrowBack } from '@mui/icons-material';
 import UserProfile from './userprofilephoto';
 
-const AccountDetails = ({ open, onClose, formData, onBack }) => {
+const AccountDetails = ({ open, onClose, loggedInUser, onBack }) => {
   // Dummy data for designation and last login time
   const dummyData = {
     designation: "Software Engineer",
@@ -18,9 +18,9 @@ const AccountDetails = ({ open, onClose, formData, onBack }) => {
 
   // Merge dummy data with provided formData
   const updatedFormData = { 
-    ...formData, 
-    designation: formData.designation || dummyData.designation, 
-    lastLoggedIn: formData.lastLoggedIn || dummyData.lastLoggedIn 
+    ...loggedInUser, 
+    designation: loggedInUser?.subscriber?.role|| dummyData.designation, 
+    lastLoggedIn: dummyData.lastLoggedIn 
   };
 
   return (
@@ -63,37 +63,43 @@ const AccountDetails = ({ open, onClose, formData, onBack }) => {
             <TextField
               fullWidth
               label="Full Name"
-              value={updatedFormData.firstName + ' ' + updatedFormData.lastName}
+              value={loggedInUser?.name}
               InputProps={{ readOnly: true }}
             />
             {/* Email Address */}
             <TextField
               fullWidth
               label="Email Address"
-              value={updatedFormData.email}
+              value={loggedInUser?.username}
               InputProps={{ readOnly: true }}
             />
             {/* Mobile Number */}
             <TextField
               fullWidth
               label="Mobile Number"
-              value={updatedFormData.mobileNumber}
+              value={loggedInUser?.mobile}
               InputProps={{ readOnly: true }}
             />
             {/* Designation */}
             <TextField
               fullWidth
               label="Designation"
-              value={updatedFormData.designation}
+              value={loggedInUser?.role?.charAt(0).toUpperCase() + loggedInUser?.role?.slice(1)}
+              InputProps={{ readOnly: true }}
+            />
+             <TextField
+              fullWidth
+              label="Organization name"
+              value={loggedInUser?.subscriber?.organizationName}
               InputProps={{ readOnly: true }}
             />
             {/* Last Logged In */}
-            <TextField
+            {/* <TextField
               fullWidth
               label="Last Logged In"
               value={updatedFormData.lastLoggedIn}
               InputProps={{ readOnly: true }}
-            />
+            /> */}
           </Box>
         </Box>
       </Box>
