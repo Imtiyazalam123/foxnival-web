@@ -3,6 +3,8 @@ import Header from '../header/header';
 import { Box, Toolbar } from '@mui/material';
 import PrivateRoute from '../../PrivateRoute';
 import { useEffect, useState } from 'react';
+import userServiceApi from '../../service/UserService';
+import { toast } from 'react-toastify';
 
 export default function ProtectedNavbar() {
   const [loggedInUser, setLoggedInUser] = useState({});
@@ -10,16 +12,20 @@ export default function ProtectedNavbar() {
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (user) {
-      setLoggedInUser(user);
-      console.log('Logged in user:', user);
-
+      userServiceApi.getUserById(user?.id)
+        .then((response) => {
+          setLoggedInUser(response?.data);
+        }).catch((error) => {
+          toast.error(error?.response?.data?.errorMessage || "Error fetching user details");
+          console.error('Error fetching user details: ', error);
+        })
     }
   }, []);
 
   return (
     <PrivateRoute>
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header loggedInUser = {loggedInUser}/>
+        <Header loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
         <Box component="main" sx={{ flex: 1 }}>
           <Toolbar />
           <Outlet />

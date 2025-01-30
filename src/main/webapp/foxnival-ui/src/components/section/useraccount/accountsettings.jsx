@@ -5,7 +5,7 @@ import { ArrowBack, ExpandMore } from '@mui/icons-material';
 import userServiceApi from '../../../service/UserService';
 import { toast } from 'react-toastify';
 
-const AccountSettings = ({ open, onClose, loggedInUser, onLogout, onBack }) => {
+const AccountSettings = ({ open, onClose, loggedInUser, setLoggedInUser, onBack }) => {
 
   const [form, setForm] = useState({
     firstName: loggedInUser?.name?.split(' ')[0] || '',
@@ -115,10 +115,17 @@ const AccountSettings = ({ open, onClose, loggedInUser, onLogout, onBack }) => {
             lastName: response?.data?.name?.split(' ')[1] || '',
             displayName: response?.data?.name || '',
             email: response?.data?.username || '',
+            mobile: response?.data?.mobile || '',
             currentPassword: '',
             newPassword: '',
             confirmPassword: ''
           }));
+          setLoggedInUser({
+            ...loggedInUser,
+            username: response?.data?.username,
+            name: response?.data?.name,
+            mobile: response?.data?.mobile
+          });
         }).catch(error => {
           if (error?.response?.status === 400) {
             toast.error(error?.response?.data?.errorMessage || "Error while updating user details");

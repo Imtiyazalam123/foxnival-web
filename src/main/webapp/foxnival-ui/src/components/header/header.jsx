@@ -129,7 +129,7 @@ import AccountDashboard from '../section/useraccount/accountdashboard';
 import AccountDetails from '../section/useraccount/accountdetails';
 import AccountSettings from '../section/useraccount/accountsettings';
 
-const Header = ({loggedInUser}) => {
+const Header = ({loggedInUser, setLoggedInUser}) => {
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [currentDrawer, setCurrentDrawer] = useState('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -138,15 +138,6 @@ const Header = ({loggedInUser}) => {
     { id: 2, text: 'Meeting reminder', time: '10m ago' },
     { id: 3, text: 'Project update', time: '1h ago' }
   ]);
-
-  const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    displayName: 'johndoe',
-    email: 'johndoe@example.com',
-    mobileNumber: '1234567890',
-    profilePhoto: '' // Add profile photo URL if available
-  });
 
   const navigate = useNavigate();
 
@@ -244,7 +235,6 @@ const Header = ({loggedInUser}) => {
           open={isDrawerOpen}
           onClose={handleDrawerClose}
           loggedInUser={loggedInUser}
-          formData={formData}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
         />
@@ -264,7 +254,7 @@ const Header = ({loggedInUser}) => {
           open={isDrawerOpen}
           onClose={handleDrawerClose}
           loggedInUser={loggedInUser}
-          onLogout={handleLogout}
+          setLoggedInUser={setLoggedInUser}
           onBack={handleBack}
         />
       )}

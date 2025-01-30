@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
-const AccountDashboard = ({ open, onClose, loggedInUser, formData, onLogout, onNavigate }) => {
+const AccountDashboard = ({ open, onClose, loggedInUser, onLogout, onNavigate }) => {
   const handleAccountDetailsOpen = () => {
     onNavigate('details');
   };
