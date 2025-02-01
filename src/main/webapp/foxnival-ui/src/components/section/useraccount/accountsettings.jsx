@@ -1,15 +1,18 @@
 
 import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Alert, Drawer, Box, IconButton, FormControlLabel, Checkbox, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { ArrowBack, ExpandMore} from '@mui/icons-material';
+import { ArrowBack, ExpandMore } from '@mui/icons-material';
+import userServiceApi from '../../../service/UserService';
+import { toast } from 'react-toastify';
 
-const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }) => {
+const AccountSettings = ({ open, onClose, loggedInUser, setLoggedInUser, onBack }) => {
+
   const [form, setForm] = useState({
-    firstName: formData.firstName || '',
-    lastName: formData.lastName || '',
-    displayName: formData.displayName || '',
-    email: formData.email || '',
-    mobile: formData.mobile || '',
+    firstName: loggedInUser?.name?.split(' ')[0] || '',
+    lastName: loggedInUser?.name?.split(' ')[1] || '',
+    displayName: loggedInUser?.name || '',
+    email: loggedInUser?.username || '',
+    mobile: loggedInUser?.mobile || '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -93,17 +96,44 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
     setSuccessMessage('');
 
     if (validateForm()) {
-      onSubmit(form);
-      setSuccessMessage('Profile updated successfully!');
-      if (showPasswordChange && form.newPassword) {
-        setForm(prev => ({
-          ...prev,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        }));
-        setShowPasswordChange(false);
+      let updateUser = {
+        name: form.firstName + ' ' + form.lastName,
+        username: form.email,
+        mobile: form.mobile,
+        changePassword: showPasswordChange,
+        currentPassword: form.currentPassword,
+        newPassword: form.confirmPassword,
       }
+      userServiceApi.updateUserDetails(loggedInUser?.id, updateUser)
+        .then(response => {
+          setSuccessMessage('Profile updated successfully!');
+          toast.success('Updated user details.');
+          setShowPasswordChange(false);
+          setForm(prev => ({
+            ...prev,
+            firstName: response?.data?.name?.split(' ')[0] || '',
+            lastName: response?.data?.name?.split(' ')[1] || '',
+            displayName: response?.data?.name || '',
+            email: response?.data?.username || '',
+            mobile: response?.data?.mobile || '',
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          }));
+          setLoggedInUser({
+            ...loggedInUser,
+            username: response?.data?.username,
+            name: response?.data?.name,
+            mobile: response?.data?.mobile
+          });
+        }).catch(error => {
+          if (error?.response?.status === 400) {
+            toast.error(error?.response?.data?.errorMessage || "Error while updating user details");
+            setErrorMessage(error?.response?.data?.errorMessage || "Error while updating user details");
+          }
+          console.error("Error while updating uer details : ", error);
+        })
+
     } else {
       setErrorMessage('Please fix the errors before submitting');
     }
@@ -127,7 +157,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
         zIndex: (theme) => theme.zIndex.modal + 1
       }}
     >
-      <Box sx={{ padding: 3 }}> 
+      <Box sx={{ padding: 3 }}>
         <Box display="flex" alignItems="center" mb={4}>
           <IconButton onClick={onBack} sx={{ mr: 2 }}>
             <ArrowBack />
@@ -187,6 +217,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
               error={!!errors.displayName}
               helperText={errors.displayName}
               sx={{ mt: 2 }}
+              InputProps={{ readOnly: true }}
             />
             <TextField
               label="Email Address"
@@ -249,7 +280,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
                     error={!!errors.currentPassword}
                     helperText={errors.currentPassword}
                   />
-                  
+
                   <TextField
                     label="New Password"
                     variant="outlined"
@@ -261,7 +292,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
                     error={!!errors.newPassword}
                     helperText={errors.newPassword}
                   />
-                  
+
                   <TextField
                     label="Confirm New Password"
                     variant="outlined"

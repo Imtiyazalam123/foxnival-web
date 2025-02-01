@@ -18,10 +18,19 @@ const userServiceApi = {
     getUsersBySubscriberId: (subscriberId) => {
         return axios.get(`${API_BASE_URL}/users/subscribers/${subscriberId}`);
     },
-    
+
     deleteUser: (userId) => {
         return axios.delete(`${API_BASE_URL}/users/${userId}`);
-    }
+    },
+
+    updateUserDetails: (userId, updateDetails) => {
+        return axios.put(`${API_BASE_URL}/users/updateUserDetails/${userId}`, updateDetails);
+    },
+
+    getUserById: (userId) => {
+        return axios.get(`${API_BASE_URL}/users/${userId}`);
+    },
+    
 }
 
 export default userServiceApi;

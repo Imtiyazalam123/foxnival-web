@@ -129,7 +129,7 @@ import AccountDashboard from '../section/useraccount/accountdashboard';
 import AccountDetails from '../section/useraccount/accountdetails';
 import AccountSettings from '../section/useraccount/accountsettings';
 
-const Header = () => {
+const Header = ({loggedInUser, setLoggedInUser}) => {
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [currentDrawer, setCurrentDrawer] = useState('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -138,15 +138,6 @@ const Header = () => {
     { id: 2, text: 'Meeting reminder', time: '10m ago' },
     { id: 3, text: 'Project update', time: '1h ago' }
   ]);
-
-  const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    displayName: 'johndoe',
-    email: 'johndoe@example.com',
-    mobileNumber: '1234567890',
-    profilePhoto: '' // Add profile photo URL if available
-  });
 
   const navigate = useNavigate();
 
@@ -170,10 +161,10 @@ const Header = () => {
     setCurrentDrawer('dashboard');
   };
 
-  const handlePasswordChange = ({ currentPassword, newPassword }) => {
-    console.log('Password change requested', { currentPassword, newPassword });
-    // Implement password change logic here
-  };
+  // const handlePasswordChange = ({ currentPassword, newPassword }) => {
+  //   console.log('Password change requested', { currentPassword, newPassword });
+  //   // Implement password change logic here
+  // };
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -201,7 +192,7 @@ const Header = () => {
               fontWeight: 'bold'
             }}
           >
-            Company Name
+            {loggedInUser?.subscriber?.organizationName}
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -243,7 +234,7 @@ const Header = () => {
         <AccountDashboard
           open={isDrawerOpen}
           onClose={handleDrawerClose}
-          formData={formData}
+          loggedInUser={loggedInUser}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
         />
@@ -253,7 +244,7 @@ const Header = () => {
         <AccountDetails
           open={isDrawerOpen}
           onClose={handleDrawerClose}
-          formData={formData}
+          loggedInUser={loggedInUser}
           onBack={handleBack}
         />
       )}
@@ -262,9 +253,8 @@ const Header = () => {
         <AccountSettings
           open={isDrawerOpen}
           onClose={handleDrawerClose}
-          formData={formData}
-          onSubmit={handlePasswordChange}
-          onLogout={handleLogout}
+          loggedInUser={loggedInUser}
+          setLoggedInUser={setLoggedInUser}
           onBack={handleBack}
         />
       )}
