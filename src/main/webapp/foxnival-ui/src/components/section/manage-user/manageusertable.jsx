@@ -454,6 +454,7 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [errors, setErrors] = useState({});
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
@@ -509,49 +510,6 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
     handleCloseFilter();
   };
 
-  const handleSaveNewUser = () => {
-    console.log("save ", newUser);
-    const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-    const userRequest = {
-      subscriberId: loggedInUser?.subscriber?.id,
-      name: newUser.name,
-      username: newUser.email,
-      mobile: newUser.mobileNo,
-      password: newUser.confirmPassword,
-      role: newUser.designation,
-    };
-
-    userServiceApi.addUser(userRequest)
-      .then(response => {
-        console.log("User added successfully:", response.data);
-
-        
-        setUsers(prevUsers => [...prevUsers, response.data]);
-        toast.success("User Created Successfully.");
-      })
-      .catch(error => {
-
-        if (error?.response?.status === 400) {
-          toast.error(error?.response?.data?.errorMessage || "Error while adding user");
-        }
-        console.error("Error while adding user:", error);
-      });
-    onCloseCreateDialog();
-  };
-
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setNewUser(user);
-    setOpenEditDialog(true);
-  };
-
-  const handleSaveEditedUser = () => {
-    console.log("save ", newUser);
-
-    // const updatedUsers = users.map(user => user.id === newUser.id ? newUser : user);
-    // setUsers(updatedUsers);
-    handleCloseEditDialog();
-  };
 
   const handleDeleteUser = (userId) => {
     setSelectedUser(users.find(user => user.id === userId));
@@ -589,12 +547,6 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
     setSelectedUser(null);
   };
 
-  const handleInputChange = (event) => {
-    setNewUser({
-      ...newUser,
-      [event.target.name]: event.target.value
-    });
-  };
 
   const filteredUsers = useMemo(() => {
     console.log("filder status ", filterStatus);
@@ -608,6 +560,145 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
   const getCurrentPageData = () => {
     const startIndex = page * rowsPerPage;
     return filteredUsers.slice(startIndex, startIndex + rowsPerPage);
+  };
+
+
+  const validateField = (name, value) => {
+    let errorMessage = '';
+    switch (name) {
+      case 'name':
+        if (!value.trim()) errorMessage = 'Name is required';
+        break;
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value.trim()) errorMessage = 'Email is required';
+        else if (!emailRegex.test(value)) errorMessage = 'Invalid email format';
+        break;
+      case 'designation':
+        if (!value) errorMessage = 'Designation is required';
+        break;
+      case 'mobileNo':
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!value.trim()) errorMessage = 'Mobile number is required';
+        else if (!phoneRegex.test(value)) errorMessage = 'Mobile number must be 10 digits';
+        break;
+      case 'password':
+        if (!value.trim()) errorMessage = 'Password is required';
+        else if (value.length < 6) errorMessage = 'Password must be at least 6 characters';
+        break;
+      case 'confirmPassword':
+        if (!value.trim()) errorMessage = 'Confirm Password is required';
+        else if (value !== newUser.password) errorMessage = 'Passwords do not match';
+        break;
+      default:
+        break;
+    }
+    return errorMessage;
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(newUser).forEach(key => {
+      const errorMessage = validateField(key, newUser[key]);
+      if (errorMessage) {
+        newErrors[key] = errorMessage;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handler methods remain mostly the same, with added validation
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewUser(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Clear the specific field's error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setNewUser({
+      id: user.id,
+      name: user.name,
+      email: user.username,
+      designation: user.role,
+      mobileNo: user.mobile,
+      status: user.active ? 'Active' : 'Inactive',
+      password: '',
+      confirmPassword: ''
+    });
+    setOpenEditDialog(true);
+  };
+
+  const handleSaveNewUser = () => {
+    if (validateForm()) {
+      const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+      const userRequest = {
+        subscriberId: loggedInUser?.subscriber?.id,
+        name: newUser.name,
+        username: newUser.email,
+        mobile: newUser.mobileNo,
+        password: newUser.confirmPassword,
+        role: newUser.designation,
+      };
+
+      userServiceApi.addUser(userRequest)
+        .then(response => {
+          setUsers(prevUsers => [...prevUsers, response.data]);
+          toast.success("User Created Successfully.");
+          onCloseCreateDialog();
+        })
+        .catch(error => {
+          if (error?.response?.status === 400) {
+            toast.error(error?.response?.data?.errorMessage || "Error while adding user");
+          }
+          console.error("Error while adding user:", error);
+        });
+    }
+  };
+
+  const handleSaveEditedUser = () => {
+    if (validateForm()) {
+      const editRequest = {
+        id: newUser.id,
+        name: newUser.name,
+        username: newUser.email,
+        mobile: newUser.mobileNo,
+        role: newUser.designation,
+        active: newUser.status === 'Active'
+      };
+
+      // Only include password if it's been changed
+      if (newUser.password) {
+        editRequest.password = newUser.password;
+      }
+
+      userServiceApi.updateUser(editRequest)
+        .then(response => {
+          // Update the user in the list
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === editRequest.id ? { ...user, ...response.data } : user
+            )
+          );
+          toast.success("User Updated Successfully.");
+          handleCloseEditDialog();
+        })
+        .catch(error => {
+          toast.error("Error while updating user.");
+          console.error("Error while updating user:", error);
+        });
+    }
   };
 
   return (
@@ -811,28 +902,45 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
             name="name"
             value={newUser.name}
             onChange={handleInputChange}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <TextField
             margin="dense"
             id="email"
             label="Email"
-            type="text"
+            type="email"
             fullWidth
             variant="standard"
             name="email"
-          />
-          <TextField
-            margin="dense"
-            id="designation"
-            label="Designation"
-            type="text"
-            fullWidth
-            variant="standard"
-            name="designation"
-            value={newUser.designation}
+            value={newUser.email}
             onChange={handleInputChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
-          <FormControl variant="standard" fullWidth>
+          <FormControl 
+            variant="standard" 
+            fullWidth 
+            margin="dense" 
+            error={!!errors.designation}
+          >
+            <InputLabel id="designation-label">Designation</InputLabel>
+            <Select
+              labelId="designation-label"
+              id="designation"
+              name="designation"
+              value={newUser.designation}
+              onChange={handleInputChange}
+            >
+              {designationOptions.map(designation => (
+                <MenuItem key={designation} value={designation}>
+                  {designation}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.designation && <div style={{color: 'red', fontSize: '0.75rem', marginTop: '4px'}}>{errors.designation}</div>}
+          </FormControl>
+          <FormControl variant="standard" fullWidth margin="dense">
             <InputLabel id="status-label">Status</InputLabel>
             <Select
               labelId="status-label"
@@ -855,6 +963,8 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
             name="mobileNo"
             value={newUser.mobileNo}
             onChange={handleInputChange}
+            error={!!errors.mobileNo}
+            helperText={errors.mobileNo}
           />
           <TextField
             margin="dense"
@@ -864,6 +974,10 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
             fullWidth
             variant="standard"
             name="password"
+            value={newUser.password}
+            onChange={handleInputChange}
+            error={!!errors.password}
+            helperText={errors.password}
           />
           <TextField
             margin="dense"
@@ -873,6 +987,10 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
             fullWidth
             variant="standard"
             name="confirmPassword"
+            value={newUser.confirmPassword}
+            onChange={handleInputChange}
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword}
           />
         </DialogContent>
         <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>

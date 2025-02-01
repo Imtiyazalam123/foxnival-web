@@ -599,7 +599,7 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                   </Popover>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Attachment</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Assigned Time</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Due Date</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -870,7 +870,7 @@ const ManageToDoListTable = ({ isCreateDialogOpen, onCloseCreateDialog }) => {
                 )}
               </FormControl>
               <TextField
-                label="Assigned time"
+                label="Due Date"
                 type="datetime-local"
                 name="assignedTime"
                 value={newTask.assignedTime}

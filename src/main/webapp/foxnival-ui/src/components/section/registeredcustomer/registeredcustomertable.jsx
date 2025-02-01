@@ -556,9 +556,8 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog, subs
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const [editErrors, setEditErrors] = useState({});
   const [customers, setCustomers] = useState([]);
-
   const [newCustomers, setNewCustomers] = useState({
     name: '',
     mobileNo: '',
@@ -585,33 +584,6 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog, subs
   const handleEditUser = (customer) => {
     setSelectedCustomer(customer);
     setOpenEditDialog(true);
-  };
-
-  const handleSaveEditedUser = () => {
-    if (selectedCustomer && subscriberId) {
-      let updatDetails = {
-        name: selectedCustomer.name,
-        mobileNo: selectedCustomer.mobileNo,
-        purpose: selectedCustomer.purpose,
-        source: selectedCustomer.source,
-        email: selectedCustomer.email,
-        comments: selectedCustomer.comments
-      }
-
-      customerServiceApi.updateCustomerDetails(selectedCustomer?.id, subscriberId, updatDetails)
-        .then(response => {
-          const updatedcustomers = customers.map(customer =>
-            customer.id === selectedCustomer?.id ? response?.data : customer
-          );
-          setCustomers(updatedcustomers);
-          toast.success("Customer updated successfully.");
-          handleCloseEditDialog();
-        })
-        .catch(error => {
-          toast.error("Error while updating customer.");
-          console.error("Error while updating customer:", error);
-        });
-    }
   };
 
   const handleDeleteCustomer = (custId) => {
@@ -713,6 +685,202 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog, subs
     return filteredcustomers.slice(startIndex, startIndex + rowsPerPage);
   };
 
+
+  const validateField = (name, value) => {
+    const errors = {};
+    
+    switch (name) {
+      case 'name':
+        if (!value || value.trim() === '') {
+          errors.name = 'Name is required';
+        } else if (value.length < 2) {
+          errors.name = 'Name must be at least 2 characters';
+        }
+        break;
+      case 'mobileNo':
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!value) {
+          errors.mobileNo = 'Phone number is required';
+        } else if (!phoneRegex.test(value)) {
+          errors.mobileNo = 'Phone number must be 10 digits';
+        }
+        break;
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (value && !emailRegex.test(value)) {
+          errors.email = 'Invalid email format';
+        }
+        break;
+      case 'purpose':
+        if (!value || value.trim() === '') {
+          errors.purpose = 'Purpose is required';
+        }
+        break;
+      case 'source':
+        if (!value) {
+          errors.source = 'Source is required';
+        }
+        break;
+    }
+    
+    return errors;
+  };
+
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+    
+  //   // Validate the field
+  //   const fieldErrors = validateField(name, value);
+    
+  //   // Update errors state
+  //   setEditErrors(prev => ({
+  //     ...prev,
+  //     ...fieldErrors
+  //   }));
+
+  //   // Update customer or new customer state
+  //   if (openEditDialog && selectedCustomer) {
+  //     setSelectedCustomer(prev => ({ ...prev, [name]: value }));
+  //   }
+  //   if (isCreateDialogOpen) {
+  //     setNewCustomers(prev => ({ ...prev, [name]: value }));
+  //   }
+  // };
+
+  const handleSaveEditedUser = () => {
+    // Validate all fields before saving
+    const allErrors = {};
+    
+    // Check each field
+    Object.keys(selectedCustomer || {}).forEach(key => {
+      const errors = validateField(key, selectedCustomer[key]);
+      Object.assign(allErrors, errors);
+    });
+
+    // If there are any errors, don't proceed
+    if (Object.keys(allErrors).length > 0) {
+      setEditErrors(allErrors);
+      return;
+    }
+
+    if (selectedCustomer && subscriberId) {
+      let updatDetails = {
+        name: selectedCustomer.name,
+        mobileNo: selectedCustomer.mobileNo,
+        purpose: selectedCustomer.purpose,
+        source: selectedCustomer.source,
+        email: selectedCustomer.email,
+        comments: selectedCustomer.comments
+      }
+
+      customerServiceApi.updateCustomerDetails(selectedCustomer?.id, subscriberId, updatDetails)
+        .then(response => {
+          const updatedcustomers = customers.map(customer =>
+            customer.id === selectedCustomer?.id ? response?.data : customer
+          );
+          setCustomers(updatedcustomers);
+          toast.success("Customer updated successfully.");
+          handleCloseEditDialog();
+        })
+        .catch(error => {
+          toast.error("Error while updating customer.");
+          console.error("Error while updating customer:", error);
+        });
+    }
+  };
+
+  // Modify the Edit Dialog to include error handling
+  const renderEditDialogContent = () => (
+    <>
+      <TextField
+        autoFocus
+        margin="dense"
+        id="name"
+        label="Name"
+        type="text"
+        fullWidth
+        variant="standard"
+        name="name"
+        value={selectedCustomer?.name || ''}
+        onChange={handleInputChange}
+        error={!!editErrors.name}
+        helperText={editErrors.name}
+      />
+      <TextField
+        margin="dense"
+        id="phoneNo"
+        label="Phone Number"
+        type="text"
+        fullWidth
+        variant="standard"
+        name="mobileNo"
+        value={selectedCustomer?.mobileNo || ''}
+        onChange={handleInputChange}
+        error={!!editErrors.mobileNo}
+        helperText={editErrors.mobileNo}
+      />
+      <TextField
+        margin="dense"
+        id="purpose"
+        label="Purpose"
+        type="text"
+        fullWidth
+        variant="standard"
+        name="purpose"
+        value={selectedCustomer?.purpose || ''}
+        onChange={handleInputChange}
+        error={!!editErrors.purpose}
+        helperText={editErrors.purpose}
+      />
+      <FormControl 
+        variant="standard" 
+        fullWidth 
+        error={!!editErrors.source}
+      >
+        <InputLabel id="source-label">Source</InputLabel>
+        <Select
+          labelId="source-label"
+          id="source"
+          name="source"
+          value={selectedCustomer?.source || ''}
+          onChange={handleInputChange}
+        >
+          <MenuItem value="Online">Online</MenuItem>
+          <MenuItem value="Offline">Offline</MenuItem>
+        </Select>
+        {editErrors.source && <div style={{color: 'red', fontSize: '0.75rem', marginTop: '4px'}}>{editErrors.source}</div>}
+      </FormControl>
+      <TextField
+        margin="dense"
+        id="email"
+        label="Email"
+        type="email"
+        fullWidth
+        variant="standard"
+        name="email"
+        value={selectedCustomer?.email || ''}
+        onChange={handleInputChange}
+        error={!!editErrors.email}
+        helperText={editErrors.email}
+      />
+
+      <TextField
+        margin="dense"
+        id="comments"
+        label="Comments"
+        type="text"
+        multiline
+        rows={3}
+        fullWidth
+        variant="standard"
+        name="comments"
+        value={selectedCustomer?.comments || ''}
+        onChange={handleInputChange}
+      />
+    </>
+  );
+
+  
   return (
     <Box >
       <Box sx={{ bgcolor: 'white', border: 1, borderColor: 'grey.200', borderRadius: 1 }}>
@@ -817,89 +985,17 @@ const RegisteredCustomerTable = ({ isCreateDialogOpen, onCloseCreateDialog, subs
         </TableContainer>
       </Box>
 
-      {/* Dialogs remain unchanged */}
+      {/* Edit Dialogs*/}
       <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Edit User</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            name="name"
-            value={selectedCustomer?.name || ''}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="phoneNo"
-            label="Phone Number"
-            type="text"
-            fullWidth
-            variant="standard"
-            name="mobileNo"
-            value={selectedCustomer?.mobileNo || ''}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="purpose"
-            label="Purpose"
-            type="text"
-            fullWidth
-            variant="standard"
-            name="purpose"
-            value={selectedCustomer?.purpose || ''}
-            onChange={handleInputChange}
-          />
-          <FormControl variant="standard" fullWidth>
-            <InputLabel id="source-label">Source</InputLabel>
-            <Select
-              labelId="source-label"
-              id="source"
-              name="source"
-              value={selectedCustomer?.source || ''}
-              onChange={handleInputChange}
-            >
-              <MenuItem value="Online">Online</MenuItem>
-              <MenuItem value="Offline">Offline</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            name="email"
-            value={selectedCustomer?.email || ''}
-            onChange={handleInputChange}
-          />
-
-          <TextField
-            margin="dense"
-            id="comments"
-            label="Comments"
-            type="text"
-            multiline
-            rows={3}
-            fullWidth
-            variant="standard"
-            name="comments"
-            value={selectedCustomer?.comments || ''}
-            onChange={handleInputChange}
-          />
-
-        </DialogContent>
-        <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
-          <Button variant='contained' onClick={handleSaveEditedUser}>Save</Button>
-          <Button variant='outlined' onClick={handleCloseEditDialog}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+      <DialogTitle sx={{ fontWeight: 'bold' }}>Edit User</DialogTitle>
+      <DialogContent>
+        {renderEditDialogContent()}
+      </DialogContent>
+      <DialogActions sx={{ padding: '16px 16px 16px 0px' }}>
+        <Button variant='contained' onClick={handleSaveEditedUser}>Save</Button>
+        <Button variant='outlined' onClick={handleCloseEditDialog}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
 
       <Dialog
         open={openDeleteDialog}

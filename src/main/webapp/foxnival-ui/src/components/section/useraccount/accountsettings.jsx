@@ -48,7 +48,7 @@ const AccountSettings = ({ open, onClose, formData, onSubmit, onLogout, onBack }
       newErrors.email = 'Please enter a valid email address';
     }
 
-    const mobileRegex = /^\+?[1-9]\d{9,14}$/;
+    const mobileRegex = /^\+?[1-9]\d{9}$/;
     if (form.mobile && !mobileRegex.test(form.mobile)) {
       newErrors.mobile = 'Please enter a valid mobile number';
     }
