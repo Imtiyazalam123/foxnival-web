@@ -46,7 +46,7 @@ const AccountDashboard = ({ open, onClose, loggedInUser, onLogout, onNavigate })
         }}
       >
         <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 3 }}>
-          <Avatar sx={{ width: 70, height: 70 }}>
+          <Avatar >
             <AccountCircle sx={{ width: 70, height: 70 }} />
           </Avatar>
           <Box>

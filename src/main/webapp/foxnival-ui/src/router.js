@@ -91,6 +91,10 @@ import StartChat from "./components/start_chats/StartChat";
 import ProtectedSidebar from "./components/layout/ProtectedSidebar";
 import ProtectedNavbar from "./components/layout/ProtectedNavbar";
 import Subscribers from "./components/dashboard/subscribers";
+import ContactUs from "./components/login/contactus";
+import AboutUs from "./components/login/aboutus";
+import HomeFront from "./components/login/home";
+import ForgotPassword from "./components/login/forgotpassword";
 
 export const router = createBrowserRouter([
     {
@@ -100,6 +104,22 @@ export const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />
+    },
+    {
+        path: "/contact", 
+        element: <ContactUs />
+    },
+    {
+        path: "/home", 
+        element: <HomeFront />
+    },
+    {
+        path: "/forgotpassword", 
+        element: <ForgotPassword />
+    },
+    {
+        path: "/about", 
+        element: <AboutUs />
     },
     {
         path: "/subscribe",
