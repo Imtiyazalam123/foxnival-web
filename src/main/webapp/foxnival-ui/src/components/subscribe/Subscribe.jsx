@@ -3,10 +3,14 @@ import '../css/form.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { Alert } from '@mui/material';
+import subscriberServiceApi from '../../service/SubscriberService';
+import { toast } from 'react-toastify';
 export default function Subscribe() {
 
     const navigate = useNavigate();
     const [showPlanDetail, setShowPlanDetail] = useState(false)
+    const [showError, setShowError] = useState(null);
     let amount = 0;
     const [payableAmount, setPayableAmount] = useState(0);
 
@@ -40,56 +44,81 @@ export default function Subscribe() {
     }
 
     //form validation
-    const {values, handleSubmit, handleChange, errors} = useFormik({
+    const { values, handleSubmit, handleChange, errors } = useFormik({
         initialValues: {
-           name: '',
-           email: '',
-           organization: '',
-           planOption: '-1',
-           password: '',
-           confirmPassword: ''
+            name: '',
+            email: '',
+            mobile: '',
+            organization: '',
+            planOption: '-1',
+            password: '',
+            confirmPassword: ''
         },
         validationSchema: Yup.object().shape({
-           name: Yup.string().min(3, 'Name must be at least 3 characters.').required("Please enter your name."),
-           email: Yup.string().email('Please enter a valid email.').required("Please enter your email."),
-           organization: Yup.string().min(3, 'Organization name must be at least 3 characters.').required("Please enter your organization name."),
-           planOption: Yup.string().oneOf(['0', '1', '2', '3'], 'Please select plan').required("Please select plan."),
-           password: Yup.string().min(5, 'Password must be at least 5 characters.').required("Please set your password."),
-           confirmPassword: Yup.string().oneOf([Yup.ref('[password')], 'Confirm password not matched').required("Please enter your confirm password.")
+            name: Yup.string().min(3, 'Name must be at least 3 characters.').required("Please enter your name."),
+            email: Yup.string().email('Please enter a valid email.').required("Please enter your email."),
+            mobile: Yup.string().matches(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.').required("Please enter your mobile number."),
+            organization: Yup.string().min(3, 'Organization name must be at least 3 characters.').required("Please enter your organization name."),
+            planOption: Yup.string().oneOf(['0', '1', '2', '3'], 'Please select plan').required("Please select plan."),
+            password: Yup.string().min(5, 'Password must be at least 5 characters.').required("Please set your password."),
+            confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Confirm password not matched').required("Please enter your confirm password.")
         }),
         onSubmit: values => {
-            if(payableAmount > 0) {
-                console.log("clicked....");
-                
-                navigate("/payment", {state: {amount: payableAmount, userInfo: values}})
-            } else {
-                console.log("Values ", values);
-                
+            if (payableAmount > 0) {
+                subscriberServiceApi.checkEmail(values?.email).then(response => {
+                    if (response.status === 200) {
+                        setShowError(null);
+                        navigate("/payment", { state: { amount: payableAmount, userInfo: values } });
+                    } else {
+                        setShowError("Something went wrong. Please try again.")
+                    }
+                }).catch(error => {
+                    if (error?.response?.status === 400) {
+                        setShowError(error?.response?.data?.errorMessage);
+                        toast.error("Email already exists.");
+                    } else {
+                        setShowError('Something went wrong. Please try again.');
+                        console.error("Error checking email:", error);
+                    }
+                });
+
             }
-        } 
+        }
     });
 
     return (
         <div className='subcriber_style'>
             <h5 className='text-start mt-2 subcriber_form_pading pb-0 fst-italic'>Fill out your details and proceed with payment</h5>
+            {showError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {showError}
+                </Alert>
+            )}
             <form onSubmit={handleSubmit}>
                 <div class="form-group subcriber_form_pading">
                     <label for="nameExample">Your full name</label>
-                    <input type="text" class="form-control" name='name' id="nameExample" placeholder="Enter username" onChange={handleChange} value={values.name}/>
+                    <input type="text" class="form-control" name='name' id="nameExample" placeholder="Enter username" onChange={handleChange} value={values.name} />
                 </div>
                 <div className="subcriber_form_pading text-danger">
                     {errors.name}
                 </div>
                 <div class="form-group subcriber_form_pading">
                     <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="Enter username" onChange={handleChange} value={values.email}/>
+                    <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="Enter username" onChange={handleChange} value={values.email} />
                 </div>
                 <div className="subcriber_form_pading text-danger">
                     {errors.email}
                 </div>
                 <div class="form-group subcriber_form_pading">
+                    <label for="mobileExample">Your mobile number</label>
+                    <input type="text" class="form-control" name='mobile' id="mobileExample" placeholder="Enter your mobile number" onChange={handleChange} value={values.mobile} />
+                </div>
+                <div className="subcriber_form_pading text-danger">
+                    {errors.mobile}
+                </div>
+                <div class="form-group subcriber_form_pading">
                     <label for="organizationExample">Your organization name</label>
-                    <input type="text" class="form-control" name = 'organization' id="organizationExample" placeholder="Enter organization name" onChange={handleChange} value={values.organization}/>
+                    <input type="text" class="form-control" name='organization' id="organizationExample" placeholder="Enter organization name" onChange={handleChange} value={values.organization} />
                 </div>
                 <div className="subcriber_form_pading text-danger">
                     {errors.organization}
@@ -110,17 +139,17 @@ export default function Subscribe() {
                 {showPlanDetail && <div className="subcriber_form_pading text-success fw-bolder fst-italic">
                     {info}
                 </div>}
-    
+
                 <div class="form-group subcriber_form_pading">
                     <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" name = 'password' id="exampleInputPassword1" placeholder="Password" onChange={handleChange} value={values.password}/>
+                    <input type="password" class="form-control" name='password' id="exampleInputPassword1" placeholder="Password" onChange={handleChange} value={values.password} />
                 </div>
                 <div className="subcriber_form_pading text-danger">
                     {errors.password}
                 </div>
                 <div class="form-group subcriber_form_pading">
                     <label for="exampleInputPassword">Confirm password</label>
-                    <input type="password" class="form-control" name='confirmPassword' id="exampleInputPassword2" placeholder="Confirm password" onChange={handleChange} value={values.confirmPassword}/>
+                    <input type="password" class="form-control" name='confirmPassword' id="exampleInputPassword2" placeholder="Confirm password" onChange={handleChange} value={values.confirmPassword} />
                 </div>
                 <div className="subcriber_form_pading text-danger">
                     {errors.confirmPassword}

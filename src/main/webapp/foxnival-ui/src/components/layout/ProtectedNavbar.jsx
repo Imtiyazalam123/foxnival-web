@@ -10,7 +10,7 @@ export default function ProtectedNavbar() {
   const [loggedInUser, setLoggedInUser] = useState({});
 
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
     if (user) {
       userServiceApi.getUserById(user?.id)
         .then((response) => {

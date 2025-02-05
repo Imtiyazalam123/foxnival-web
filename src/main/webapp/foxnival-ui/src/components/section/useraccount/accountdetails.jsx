@@ -1,13 +1,15 @@
 import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  TextField, 
+import {
+  Box,
+  Typography,
+  TextField,
   Drawer,
-  IconButton 
+  IconButton,
+  Button
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import UserProfile from './userprofilephoto';
+import { MANAGER, OWNER } from '../../../constant/Role';
 
 const AccountDetails = ({ open, onClose, loggedInUser, onBack }) => {
   // Dummy data for designation and last login time
@@ -17,10 +19,10 @@ const AccountDetails = ({ open, onClose, loggedInUser, onBack }) => {
   };
 
   // Merge dummy data with provided formData
-  const updatedFormData = { 
-    ...loggedInUser, 
-    designation: loggedInUser?.subscriber?.role|| dummyData.designation, 
-    lastLoggedIn: dummyData.lastLoggedIn 
+  const updatedFormData = {
+    ...loggedInUser,
+    designation: loggedInUser?.subscriber?.role || dummyData.designation,
+    lastLoggedIn: dummyData.lastLoggedIn
   };
 
   return (
@@ -50,7 +52,7 @@ const AccountDetails = ({ open, onClose, loggedInUser, onBack }) => {
             Account Details
           </Typography>
         </Box>
-        
+
         <UserProfile
           name={updatedFormData.firstName + ' ' + updatedFormData.lastName}
           email={updatedFormData.email}
@@ -87,12 +89,26 @@ const AccountDetails = ({ open, onClose, loggedInUser, onBack }) => {
               value={loggedInUser?.role?.charAt(0).toUpperCase() + loggedInUser?.role?.slice(1)}
               InputProps={{ readOnly: true }}
             />
-             <TextField
+            <TextField
               fullWidth
               label="Organization name"
               value={loggedInUser?.subscriber?.organizationName}
               InputProps={{ readOnly: true }}
             />
+
+            {(loggedInUser?.role === OWNER || loggedInUser?.role === MANAGER) && <Typography variant="body1" sx={{ color: 'red' }}>
+              Your subsciption is valid up to : 
+             {" " + new Date(loggedInUser?.subscriber?.validityDate).toLocaleString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            })}
+            </Typography> }
+
             {/* Last Logged In */}
             {/* <TextField
               fullWidth

@@ -8,7 +8,7 @@ export default function AssignedTask() {
     const [userHasHigherRole, setUserHasHigherRole] = useState(false);
     
     useEffect(() => {
-        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        let loggedinUser = JSON.parse(localStorage.getItem('loggedInUser'));
         setUserHasHigherRole((loggedinUser?.role === OWNER || loggedinUser?.role === MANAGER));
     }, []);
     

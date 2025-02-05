@@ -39,11 +39,12 @@ export default function Payment() {
                         // image: "https://example.com/your_logo",
                         order_id: data?.id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
                         handler: function (response) {
-                            if(state?.userInfo) {
+                            if (state?.userInfo) {
                                 let data = {
                                     name: state?.userInfo?.name,
                                     role: OWNER,
                                     username: state?.userInfo?.email,
+                                    mobile: state?.userInfo?.mobile,
                                     password: state?.userInfo?.password,
                                     organizationName: state?.userInfo?.organization,
                                     planForYear: state?.userInfo?.planOption,
@@ -55,13 +56,13 @@ export default function Payment() {
                                 createSubscription(data)
                             }
                             console.log("Response", state?.userInfo);
-                            
+
                             // alert(response.razorpay_payment_id);
                             // alert(response.razorpay_order_id);
                             // alert(response.razorpay_signature);
 
                             console.log("success ", response);
-                            
+
                         },
                         prefill: {
 
@@ -105,33 +106,46 @@ export default function Payment() {
             console.log("Error ", err);
         })
     }
- const createSubscription = async(data) => {
-    await fetch('http://localhost:8080/subscribe/createSubscriberUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(response => response.json())
-    .then((res) => {
-        console.log("Subs res ", res);
-        Swal.fire({
-            title: "Congratulation!",
-            text: "You have succesfully subscribed, I will send login credential on your email, please check your email and login with that credential!",
-            icon: "success"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate("/login")
-            }
-        });
-    }).catch((err) => {
-        console.log("Subs Error ", err);
-        
-    });
- }
+    const createSubscription = async (data) => {
+        await fetch('http://localhost:8080/subscribe/createSubscriberUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then((res) => {
+                console.log("Subs res ", res);
+                if (res.status === 201) {
+                    Swal.fire({
+                        title: "Congratulation!",
+                        text: "You have successfully subscribed, I will send login credentials to your email, please check your email and login with that credential!",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate("/login")
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error", 
+                        title: "Oops...",
+                        text: "Something went wrong, Please try again after some time!",
+                        // footer: '<a href="#">Why do I have this issue?</a>'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate("/")
+                        }
+                    });
+                }
+            }).catch((err) => {
+                console.log("Subs Error ", err);
+
+            });
+    }
     return (
         showLoader && <div class="text-center mt-5">
             <div className="spinner-border text-success loader_style" role="status">
-                
-            </div> <br/>
+
+            </div> <br />
             <span className='text-success'>Loading payment page....</span>
         </div>
     )

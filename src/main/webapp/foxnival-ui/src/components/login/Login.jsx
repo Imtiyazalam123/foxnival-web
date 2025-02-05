@@ -12,7 +12,7 @@
 //     const [showError, setShowError] = useState(false);
 
 //     useEffect(() => {
-//         if(JSON.parse(sessionStorage.getItem('loggedInUser'))) {
+//         if(JSON.parse(localStorage.getItem('loggedInUser'))) {
 //             navigate('/dashboard');
 //         }
 //     })
@@ -153,7 +153,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-    if (JSON.parse(sessionStorage.getItem("loggedInUser"))) {
+    if (JSON.parse(localStorage.getItem("loggedInUser"))) {
       navigate("/dashboard");
     }
   }, [navigate]);
@@ -178,7 +178,7 @@ export default function Login() {
           if (res?.data) {
             setShowError(false);
             toast.success("Authenticated.");
-            sessionStorage.setItem("loggedInUser", JSON.stringify(res?.data));
+            localStorage.setItem("loggedInUser", JSON.stringify(res?.data));
             navigate("/dashboard");
           }
         })

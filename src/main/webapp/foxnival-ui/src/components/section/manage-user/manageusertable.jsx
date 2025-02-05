@@ -642,7 +642,7 @@ const UserManagementDashboard = ({ isCreateDialogOpen, onCloseCreateDialog, subs
 
   const handleSaveNewUser = () => {
     if (validateForm()) {
-      const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
       const userRequest = {
         subscriberId: loggedInUser?.subscriber?.id,
         name: newUser.name,
