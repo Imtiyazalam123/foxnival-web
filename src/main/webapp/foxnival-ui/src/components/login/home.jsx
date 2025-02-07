@@ -8,7 +8,7 @@ import {
   Card,
   CardContent,
   CardMedia,
-  styled
+  styled,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import NavMenu from "./nav";
@@ -36,24 +36,31 @@ export default function HomeFront() {
     {
       title: "Feature One",
       description: "Detailed description of the first key feature.",
-      icon: "🚀"
+      icon: "🚀",
     },
     {
-      title: "Feature Two", 
+      title: "Feature Two",
       description: "Detailed description of the second key feature.",
-      icon: "💡"
+      icon: "💡",
     },
     {
       title: "Feature Three",
       description: "Detailed description of the third key feature.",
-      icon: "🌟"
-    }
+      icon: "🌟",
+    },
   ];
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems:'center' }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <NavMenu />
-      
+
       <HeroSection sx={{ width: "100%" }}>
         <Container maxWidth="md">
           <Typography variant="h2" component="h1" gutterBottom>
@@ -62,15 +69,15 @@ export default function HomeFront() {
           <Typography variant="h5" paragraph>
             Innovative solutions for your business needs
           </Typography>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            size="large" 
-            component={Link} 
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            component={Link}
             to="/signup"
             sx={{ mt: 3 }}
           >
-            Get Started
+            Subscribe Now
           </Button>
         </Container>
       </HeroSection>
