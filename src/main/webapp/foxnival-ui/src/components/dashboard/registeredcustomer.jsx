@@ -15,7 +15,7 @@ export default function RegisteredCustomer() {
     };
 
     useEffect(() => {
-        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        let loggedinUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (loggedinUser && loggedinUser.subscriber) {
             setSubscriberId(loggedinUser.subscriber.id);
         } else {

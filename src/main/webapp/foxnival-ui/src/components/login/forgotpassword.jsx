@@ -138,13 +138,6 @@ const PasswordVerification = () => {
     }, 2500);
   };
 
-  const resetForm = () => {
-    setEmail('');
-    setOtp('');
-    setNewPassword('');
-    setConfirmNewPassword('');
-    setStage('email');
-  };
 
   const handleCloseAlert = () => {
     setError('');

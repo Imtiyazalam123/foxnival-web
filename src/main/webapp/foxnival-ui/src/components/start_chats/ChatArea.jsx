@@ -5,7 +5,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 export default function ChatArea({ messages }) {
 
-  let loggedinUser = JSON.parse(sessionStorage.getItem('loggedinUser'))
+  let loggedinUser = JSON.parse(localStorage.getItem('loggedinUser'))
   console.log(loggedinUser);
   
 

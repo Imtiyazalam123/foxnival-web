@@ -2,7 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const isUserLoggedIn = () => {
 
-    return JSON.parse(sessionStorage.getItem('loggedInUser')) ? true : false;
+    return JSON.parse(localStorage.getItem('loggedInUser')) ? true : false;
 }
 
 const PrivateRoute = ({ children }) => {

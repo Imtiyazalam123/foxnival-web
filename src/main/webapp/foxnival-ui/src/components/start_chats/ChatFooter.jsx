@@ -12,7 +12,7 @@ export default function ChatFooter({sendMessage, selectedUser}) {
         
     }
     const handleClick = () => {
-        let loggedinUser = JSON.parse(sessionStorage.getItem('loggedinUser'))
+        let loggedinUser = JSON.parse(localStorage.getItem('loggedinUser'))
         let msg = {
             senderUsername: loggedinUser?.userName,
             receiverUsername: selectedUser?.username,
