@@ -10,6 +10,10 @@ const forgotpasswordApi = {
     verifyOtp: (email, otp) => {
         return axios.post(`${API_BASE_URL}/verifyOtp/${email}/otp/${otp}`);
     },
+
+    resetPassword: (email, password) => {
+        return axios.put(`${API_BASE_URL}/resetPassword/${email}/password/${password}`);
+    },
 }
 
 export default forgotpasswordApi;

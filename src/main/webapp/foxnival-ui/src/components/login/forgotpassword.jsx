@@ -37,8 +37,10 @@ const PasswordVerification = () => {
 
   // Countdown timer for resend
   useEffect(() => {
-    const countdown = timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
-    return () => clearInterval(countdown);
+    if (timer > 0) {
+      const countdown = setInterval(() => setTimer((prevTimer) => prevTimer - 1), 1000);
+      return () => clearInterval(countdown);
+    }
   }, [timer]);
 
   // Automatically advance to reset stage for testing
@@ -62,7 +64,7 @@ const PasswordVerification = () => {
       setError('Please enter a valid email address');
       return;
     }
-  
+
     setIsSendingCode(true);
     //Simulate sending verification code
     forgotpasswordApi.sendVerificationCode(email)
@@ -117,19 +119,23 @@ const PasswordVerification = () => {
 
   const handleResend = () => {
     if (canResend) {
+      setIsSendingCode(true);
       forgotpasswordApi.sendVerificationCode(email)
         .then((res) => {
           if (res?.data) {
+            setIsSendingCode(false);
             setTimer(180);
             setCanResend(false);
             setOtp(''); // Reset OTP input
             setSuccess('New verification code sent!');
             setError('');
           } else {
+            setIsSendingCode(false);
             setError('Failed to resend verification code. Please try again.');
           }
         })
         .catch((error) => {
+          setIsSendingCode(false);
           setError('Failed to resend verification code. Please try again.');
           console.error(error);
         });
@@ -146,39 +152,65 @@ const PasswordVerification = () => {
 
 
   const handleResetPassword = () => {
+
+    let isValidForm = true;
+
+    const timeout = setTimeout(() => {
+      setError('Timeout. Please try again.');
+      window.location.reload();
+    }, 180000);
+
     // Enhanced password validations
     if (newPassword !== confirmNewPassword) {
+      isValidForm = false;
       setError('Passwords do not match');
-      return;
     }
 
     if (newPassword.length < 8) {
+      isValidForm = false;
       setError('Password must be at least 8 characters');
-      return;
     }
 
     if (!/[A-Z]/.test(newPassword)) {
+      isValidForm = false;
       setError('Password must contain at least one uppercase letter');
-      return;
     }
 
     if (!/[0-9]/.test(newPassword)) {
+      isValidForm = false;
       setError('Password must contain at least one number');
-      return;
     }
 
     if (!/[!@#$%^&*]/.test(newPassword)) {
+      isValidForm = false;
       setError('Password must contain at least one special character');
-      return;
     }
 
     // Simulated password reset
-    setSuccess('Password reset successfully');
-    // resetForm();
+    if (isValidForm) {
+      forgotpasswordApi.resetPassword(email, newPassword)
+        .then((res) => {
+          if (res?.data) {
+            clearTimeout(timeout);
+            setSuccess('Password reset successfully');
+            setError('');
+            setTimeout(() => {
+              navigate('/login');
+            }, 2500);
+          } else {
+            setError('Failed to reset password. Please try again.');
+          }
+        })
+        .catch((error) => {
+          if (error?.response?.status === 400) {
+            setError(error?.response?.data?.errorMessage || 'Failed to reset password. Please try again.')
+          } else {
+            setError('Failed to reset password. Please try again.');
+            console.error(error);
+          }
+        });
+    }
 
-    setTimeout(() => {
-      navigate('/login');
-    }, 2500);
   };
 
 
@@ -262,7 +294,7 @@ const PasswordVerification = () => {
                 onClick={handleSendConfirmation}
                 disabled={isSendingCode}
               >
-                {isSendingCode ? "Send Verification Code....." : "Send Verification Code"}
+                {isSendingCode ? "Sending Verification Code....." : "Send Verification Code"}
               </Button>
             </>
           )}
@@ -325,9 +357,9 @@ const PasswordVerification = () => {
                   variant="outlined"
                   color="primary"
                   onClick={handleResend}
-                  disabled={!canResend}
+                  disabled={!canResend || isSendingCode}
                 >
-                  {canResend ? 'Resend' : timer > 60 ? `Resend in ${Math.floor(timer / 60)}m` : `Resend in ${timer}s`}
+                  {canResend ? (isSendingCode ? 'Resend...' : 'Resend') : (timer > 60 ? `Resend in ${Math.floor(timer / 60)}m:${timer % 60}s` : `Resend in ${timer}s`)}
                 </Button>
                 <Button
                   variant="contained"
