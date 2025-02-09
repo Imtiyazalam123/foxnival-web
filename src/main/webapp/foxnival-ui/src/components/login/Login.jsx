@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // import React, { useEffect, useState } from 'react'
 // import '../css/form.css'
 // import { Link, useNavigate } from 'react-router-dom'
@@ -84,7 +82,6 @@
 //     )
 // }
 
->>>>>>> 3486991faab53688a7f7179b9328153bc9504155
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";

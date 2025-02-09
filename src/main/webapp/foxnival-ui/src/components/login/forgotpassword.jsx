@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import OtpInput from 'react-otp-input';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Typography, 
-  TextField, 
-  Button, 
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
   Stack,
   Snackbar,
   Alert,
@@ -15,12 +15,13 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import forgotpasswordApi from '../../service/ForgetPasswordService';
 
 const PasswordVerification = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(180);
   const [canResend, setCanResend] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -29,6 +30,8 @@ const PasswordVerification = () => {
   const [success, setSuccess] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [isSendingCode, setIsSendingCode] = useState(false);
 
   const DUMMY_OTP = '123456';
 
@@ -39,12 +42,12 @@ const PasswordVerification = () => {
   }, [timer]);
 
   // Automatically advance to reset stage for testing
-  useEffect(() => {
-    if (otp === DUMMY_OTP) {
-      setStage('reset');
-      setSuccess('Dummy OTP verified. Set new password.');
-    }
-  }, [otp]);
+  // useEffect(() => {
+  //   if (otp === DUMMY_OTP) {
+  //     setStage('reset');
+  //     setSuccess('Dummy OTP verified. Set new password.');
+  //   }
+  // }, [otp]);
 
   // Enable resend when timer reaches 0
   useEffect(() => {
@@ -59,12 +62,34 @@ const PasswordVerification = () => {
       setError('Please enter a valid email address');
       return;
     }
-    // Simulate sending verification code
-    setStage('verify');
-    setSuccess(`Verification code sent to ${email}. (Dummy OTP: ${DUMMY_OTP})`);
-    setError('');
-    setTimer(60);
-    setCanResend(false);
+  
+    setIsSendingCode(true);
+    //Simulate sending verification code
+    forgotpasswordApi.sendVerificationCode(email)
+      .then((res) => {
+        if (res?.data) {
+          setIsSendingCode(false);
+          setStage('verify');
+          setSuccess(`Verification code sent to ${email} successfully`);
+          setError('');
+          setTimer(180);
+          setCanResend(false);
+        } else {
+          setIsSendingCode(false);
+          setError('Failed to send verification code. Please try again.');
+        }
+
+      })
+      .catch((error) => {
+        if (error?.response?.status === 400) {
+          setIsSendingCode(false);
+          setError(error?.response?.data?.errorMessage || 'Email not found. Please enter a valid email address');
+        } else {
+          setIsSendingCode(false);
+          setError('Failed to send verification code. Please try again.');
+          console.error(error);
+        }
+      });
   };
 
   const handleVerifyCode = () => {
@@ -72,24 +97,42 @@ const PasswordVerification = () => {
       setError('Please enter a complete 6-digit code');
       return;
     }
-    
+
     // Simulated verification logic
-    if (otp === DUMMY_OTP) {
-      setStage('reset');
-      setSuccess('Code verified. Please set a new password');
-      setError('');
-    } else {
-      setError('Invalid verification code');
-    }
+    forgotpasswordApi.verifyOtp(email, otp)
+      .then((res) => {
+        if (res?.data) {
+          setStage('reset');
+          setSuccess('Code verified. Please set a new password');
+          setError('');
+        } else {
+          setError('Invalid verification code');
+        }
+      })
+      .catch((error) => {
+        setError('Failed to verify code. Please try again.');
+        console.error(error);
+      });
   };
 
   const handleResend = () => {
     if (canResend) {
-      // Simulated resend logic
-      setTimer(60);
-      setCanResend(false);
-      setOtp(''); // Reset OTP input
-      setSuccess('New verification code sent!');
+      forgotpasswordApi.sendVerificationCode(email)
+        .then((res) => {
+          if (res?.data) {
+            setTimer(180);
+            setCanResend(false);
+            setOtp(''); // Reset OTP input
+            setSuccess('New verification code sent!');
+            setError('');
+          } else {
+            setError('Failed to resend verification code. Please try again.');
+          }
+        })
+        .catch((error) => {
+          setError('Failed to resend verification code. Please try again.');
+          console.error(error);
+        });
     }
   };
 
@@ -154,37 +197,37 @@ const PasswordVerification = () => {
         backgroundColor: '#f5f5f5'
       }}
     >
-      <Card 
-        sx={{ 
+      <Card
+        sx={{
           maxWidth: 500,
-          width: '100%', 
+          width: '100%',
           padding: 3,
           borderRadius: 3,
           boxShadow: 3
         }}
       >
         <CardContent>
-          <Typography 
-            variant="h5" 
-            gutterBottom 
-            sx={{ 
-              textAlign: 'center', 
-              marginBottom: 2 
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              textAlign: 'center',
+              marginBottom: 2
             }}
           >
-            {stage === 'email' ? 'Forgot Password' : 
-             stage === 'verify' ? 'Verification Code' : 
-             'Reset Password'}
+            {stage === 'email' ? 'Forgot Password' :
+              stage === 'verify' ? 'Verification Code' :
+                'Reset Password'}
           </Typography>
 
-          <Snackbar 
-            open={!!error || !!success} 
-            autoHideDuration={3000} 
+          <Snackbar
+            open={!!error || !!success}
+            autoHideDuration={3000}
             onClose={handleCloseAlert}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
-            <Alert 
-              onClose={handleCloseAlert} 
+            <Alert
+              onClose={handleCloseAlert}
               severity={error ? 'error' : 'success'}
               sx={{ width: '100%' }}
             >
@@ -194,12 +237,12 @@ const PasswordVerification = () => {
 
           {stage === 'email' && (
             <>
-              <Typography 
-                variant="body2" 
-                color="text.secondary" 
-                sx={{ 
-                  textAlign: 'center', 
-                  marginBottom: 3 
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  textAlign: 'center',
+                  marginBottom: 3
                 }}
               >
                 Enter your email to receive a verification code
@@ -217,39 +260,40 @@ const PasswordVerification = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleSendConfirmation}
+                disabled={isSendingCode}
               >
-                Send Verification Code
+                {isSendingCode ? "Send Verification Code....." : "Send Verification Code"}
               </Button>
             </>
           )}
 
           {stage === 'verify' && (
             <>
-              <Typography 
-                variant="body2" 
-                color="text.secondary" 
-                sx={{ 
-                  textAlign: 'center', 
-                  marginBottom: 3 
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  textAlign: 'center',
+                  marginBottom: 3
                 }}
               >
-                Enter the 6-digit verification code 
+                Enter the 6-digit verification code
                 <br />
                 <strong>Hint: Use {DUMMY_OTP}</strong>
               </Typography>
 
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  marginBottom: 3 
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginBottom: 3
                 }}
               >
                 <OtpInput
                   value={otp}
                   onChange={setOtp}
                   numInputs={6}
-                  renderSeparator={<span style={{ width: '10px' }}/>}
+                  renderSeparator={<span style={{ width: '10px' }} />}
                   renderInput={(props) => (
                     <input
                       {...props}
@@ -267,27 +311,27 @@ const PasswordVerification = () => {
                 />
               </Box>
 
-              <Stack 
-                direction="row" 
-                spacing={2} 
-                sx={{ 
-                  width: '100%', 
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginBottom: 2
                 }}
               >
-                <Button 
-                  variant="outlined" 
-                  color="primary" 
+                <Button
+                  variant="outlined"
+                  color="primary"
                   onClick={handleResend}
                   disabled={!canResend}
                 >
-                  {canResend ? 'Resend' : `Resend in ${timer}s`}
+                  {canResend ? 'Resend' : timer > 60 ? `Resend in ${Math.floor(timer / 60)}m` : `Resend in ${timer}s`}
                 </Button>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
+                <Button
+                  variant="contained"
+                  color="primary"
                   onClick={handleVerifyCode}
                 >
                   Verify Code
@@ -296,7 +340,7 @@ const PasswordVerification = () => {
             </>
           )}
 
-{stage === 'reset' && (
+          {stage === 'reset' && (
             <>
               <TextField
                 fullWidth
