@@ -4,7 +4,7 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-export default function ChatFooter({sendMessage, selectedUser}) {
+export default function ChatFooter({sendMessage, receiverUser}) {
     const [input, setInput] = useState('');
     const handleOnChange = (e) => {
         setInput(e?.target?.value)
@@ -12,13 +12,13 @@ export default function ChatFooter({sendMessage, selectedUser}) {
         
     }
     const handleClick = () => {
-        let loggedinUser = JSON.parse(localStorage.getItem('loggedinUser'))
+        let loggedinUser = JSON.parse(localStorage.getItem('loggedInUser'))
         let msg = {
-            senderUsername: loggedinUser?.userName,
-            receiverUsername: selectedUser?.username,
-            content: input
+            senderId: loggedinUser?.id,
+            receiverId: receiverUser?.id ,
+            text: input,
+            timestamp: new Date().toISOString()
         }
-        console.log("send ", input);
         sendMessage(msg)
         setInput('');
     }

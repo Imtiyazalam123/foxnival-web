@@ -5,7 +5,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CallIcon from '@mui/icons-material/Call';
 import ChatArea from './ChatArea'
 
-export default function ChatBoxHeader({selectedUser, messages}) {
+export default function ChatBoxHeader({receiverUser, privateMessages, loggedinUser}) {
     return (
      <>
      
@@ -19,7 +19,7 @@ export default function ChatBoxHeader({selectedUser, messages}) {
                             <ArrowBackIcon />
                         </Button>
                         <Avatar >
-                            {selectedUser?.name?.split(' ').map(function(item){return item[0]}).join('')}
+                            {receiverUser?.name?.split(' ').map(function(item){return item[0]}).join('')}
                         </Avatar>
                     </>
                 }
@@ -30,16 +30,16 @@ export default function ChatBoxHeader({selectedUser, messages}) {
                         </IconButton>
                     </>
                 }
-                title={selectedUser?.name}
+                title={receiverUser?.name}
                 subheader={
                     <Typography variant='caption'>
-                        {selectedUser?.username}
+                        {receiverUser?.username}
                     </Typography>
                 }
             />
         </Card>
 
-        <ChatArea  messages = {messages} />
+        <ChatArea  receiverUser = {receiverUser} privateMessages = {privateMessages} loggedinUser = {loggedinUser} />
      </>
     )
 }
